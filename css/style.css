@@ -1426,3 +1426,17 @@ body.mode-basic .setting-advanced {
 .info-icon-btn[data-active="true"] {
     color: rgb(96, 165, 250);
 }
+
+/* Header credit links */
+.header-credit-link {
+    color: rgba(100, 116, 139, 0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.header-credit-link:hover {
+    color: rgb(96, 165, 250);
+    border-bottom-color: rgba(96, 165, 250, 0.4);
+}

@@ -21,8 +21,21 @@
     <div class="max-w-[1900px] w-full mx-auto flex-1 flex flex-col p-4 lg:p-6 lg:overflow-hidden">
 
         <header class="flex justify-between items-center mb-4 pb-4 border-b border-white/5 flex-none z-[1000]">
-            <div class="flex items-center gap-4">
-                <img src="img/logo.png" alt="LeManStudio" class="h-6 w-auto object-contain">
+            <div class="flex items-center gap-4 min-w-0">
+                <img src="img/logo.png" alt="LeManStudio" class="h-6 w-auto object-contain flex-shrink-0">
+                <div class="flex flex-col gap-0.5 min-w-0 hidden md:flex">
+                    <p class="text-[8px] text-amber-500/60 font-bold uppercase tracking-widest leading-tight">
+                        ⚠ Simulation values are approximate — results may not reflect 100% real-world LMU behaviour.
+                    </p>
+                    <p class="text-[8px] text-slate-600 font-bold uppercase tracking-widest leading-tight">
+                        Made by
+                        <a href="https://github.com/William19D" target="_blank" rel="noopener noreferrer"
+                           class="header-credit-link">William19D</a>
+                        &amp;
+                        <a href="https://github.com/Simplezes" target="_blank" rel="noopener noreferrer"
+                           class="header-credit-link">Simplezes</a>
+                    </p>
+                </div>
             </div>
 
             <div class="flex gap-4 items-center">
