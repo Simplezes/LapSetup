@@ -1,7 +1,8 @@
 ![LeManStudio Preview](img/logo.png)
-![LeManStudio Preview](img/preview.png)
 
-LeManStudio is a web-based engineering suite designed to aid virtual drivers in configuring their car setups. It provides an intuitive, data-driven interface to visualize the effects of vehicle setup changes, helping drivers optimize their performance on the track.
+### LeManStudio is a web-based engineering suite designed to aid drivers in configuring their car setups. It provides an intuitive, data-driven interface to visualize the effects of vehicle setup changes, helping drivers optimize their performance on the track.
+
+![LeManStudio Preview](img/preview.png)
 
 ## Features
 
@@ -16,3 +17,6 @@ LeManStudio is a web-based engineering suite designed to aid virtual drivers in 
 - **HTML5 & Vanilla JS:** Lightweight and responsive core mechanics without heavy framework dependencies.
 - **Tailwind CSS:** Modern utility-first styling for a sleek, glassmorphism-inspired UI.
 - **SVG Graphics:** Scalable, crisp performance visualizations.
+
+*Note: This tool does not fully simulate LMU physics but it is a work in progress :)*
+                
