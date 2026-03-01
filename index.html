@@ -25,7 +25,7 @@
                 <img src="img/logo.png" alt="LeManStudio" class="h-6 w-auto object-contain flex-shrink-0">
                 <div class="flex flex-col gap-0.5 min-w-0 hidden md:flex">
                     <p class="text-[8px] text-amber-500/60 font-bold uppercase tracking-widest leading-tight">
-                        ⚠ Simulation values are approximate — results may not reflect 100% real-world LMU behaviour.
+                        ⚠ Simulation values are approximate — results may not reflect 100% in LMU behaviour.
                     </p>
                     <p class="text-[8px] text-slate-600 font-bold uppercase tracking-widest leading-tight">
                         Made by
@@ -436,52 +436,20 @@
                             </p>
                             <div class="grid grid-cols-2 gap-1 w-full" style="height:60px">
                                 <div id="tyreFL" class="flex border border-white/5 overflow-hidden rounded-sm"
-                                    title="Front Left: Inside | Center | Outside">
-                                    <div id="heatFL_I"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatFL_C"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatFL_O"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] relative">
-                                    </div>
+                                    title="Front Left: Tyre Temperature">
+                                    <div id="heatFL" class="flex-1 transition-colors duration-500 min-h-[40px]"></div>
                                 </div>
                                 <div id="tyreFR" class="flex border border-white/5 overflow-hidden rounded-sm"
-                                    title="Front Right: Outside | Center | Inside">
-                                    <div id="heatFR_O"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatFR_C"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatFR_I"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] relative">
-                                    </div>
+                                    title="Front Right: Tyre Temperature">
+                                    <div id="heatFR" class="flex-1 transition-colors duration-500 min-h-[40px]"></div>
                                 </div>
                                 <div id="tyreRL" class="flex border border-white/5 overflow-hidden rounded-sm"
-                                    title="Rear Left: Inside | Center | Outside">
-                                    <div id="heatRL_I"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatRL_C"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatRL_O"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] relative">
-                                    </div>
+                                    title="Rear Left: Tyre Temperature">
+                                    <div id="heatRL" class="flex-1 transition-colors duration-500 min-h-[40px]"></div>
                                 </div>
                                 <div id="tyreRR" class="flex border border-white/5 overflow-hidden rounded-sm"
-                                    title="Rear Right: Outside | Center | Inside">
-                                    <div id="heatRR_O"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatRR_C"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] border-r border-white/5 relative">
-                                    </div>
-                                    <div id="heatRR_I"
-                                        class="flex-1 transition-colors duration-500 min-h-[40px] relative">
-                                    </div>
+                                    title="Rear Right: Tyre Temperature">
+                                    <div id="heatRR" class="flex-1 transition-colors duration-500 min-h-[40px]"></div>
                                 </div>
                             </div>
                             <div class="w-full mt-2">
