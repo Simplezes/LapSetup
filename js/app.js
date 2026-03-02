@@ -362,6 +362,23 @@ const CAR_CATEGORIES = {
     'LMP3': { ids: ['ginetta_g61_lmp3', 'ligier_js_p325_lmp3'], color: '#f59e0b' },
 };
 
+const CLASS_GHOST_SCALE = {
+    'LMGT3': 0.6,
+    'LMP2': 0.8,
+    'LMP3': 0.7
+};
+
+function getCarGhostScale() {
+    if (!CAR) return 1;
+    for (const [cls, { ids }] of Object.entries(CAR_CATEGORIES)) {
+        if (ids.includes(CAR.id)) {
+            return CLASS_GHOST_SCALE[cls] ?? 1;
+        }
+    }
+    return 1;
+}
+
+
 function renderMachineDropdown() {
     if (!els.machineDropdown || !window.CARS) return;
     els.machineDropdown.innerHTML = '';
@@ -512,6 +529,79 @@ function selectTrack(id) {
 }
 
 initTracks();
+
+function initTooltips() {
+    const tooltip = document.createElement('div');
+    tooltip.id = 'lma-tooltip';
+    tooltip.className = 'lma-tooltip hide';
+    document.body.appendChild(tooltip);
+
+    document.querySelectorAll('.cursor-help[title]').forEach(el => {
+        el.dataset.tooltip = el.getAttribute('title');
+        el.removeAttribute('title');
+    });
+
+    let activeEl = null;
+
+    const show = (el, ev) => {
+        const txt = el.dataset.tooltip || el.getAttribute('data-tooltip');
+        if (!txt) return;
+        activeEl = el;
+        tooltip.innerHTML = txt;
+        tooltip.classList.remove('hide');
+        tooltip.classList.add('show');
+        position(ev);
+    };
+
+    const position = (ev) => {
+        if (!tooltip || !activeEl) return;
+        const mouseX = ev.clientX || (ev.touches && ev.touches[0] && ev.touches[0].clientX) || window.innerWidth / 2;
+        const mouseY = ev.clientY || (ev.touches && ev.touches[0] && ev.touches[0].clientY) || window.innerHeight / 2;
+        tooltip.style.display = 'block';
+        tooltip.style.left = '0px';
+        tooltip.style.top = '0px';
+        const rect = tooltip.getBoundingClientRect();
+        let x = mouseX + 12;
+        let y = mouseY + 12;
+        if (x + rect.width > window.innerWidth - 8) x = mouseX - rect.width - 12;
+        if (y + rect.height > window.innerHeight - 8) y = mouseY - rect.height - 12;
+        if (x < 8) x = 8;
+        if (y < 8) y = 8;
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+    };
+
+    const hide = (el) => {
+        activeEl = null;
+        tooltip.classList.remove('show');
+        tooltip.classList.add('hide');
+        setTimeout(() => { if (!activeEl) tooltip.style.display = 'none'; }, 120);
+    };
+
+    document.addEventListener('mouseover', (e) => {
+        const el = e.target.closest('.cursor-help, [data-tooltip]');
+        if (el) show(el, e);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (activeEl) position(e);
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const el = e.target.closest('.cursor-help, [data-tooltip]');
+        if (el) hide(el);
+    });
+
+    document.addEventListener('touchstart', (e) => {
+        const el = e.target.closest('.cursor-help, [data-tooltip]');
+        if (el) {
+            show(el, e.touches[0]);
+            setTimeout(() => hide(el), 2200);
+        }
+    });
+}
+
+initTooltips();
 
 function updateSliderFill(input) {
     const min = parseFloat(input.min);
@@ -868,39 +958,14 @@ function update() {
     const fBaseHeat = Math.max(trackTemp, baseHeat + fDuctHeat + fSpringHeatMod + fHystHeat + 30);
     const rBaseHeat = Math.max(trackTemp, baseHeat + rDuctHeat + rSpringHeatMod + rHystHeat + 26);
 
-
-    // ------------------------------------------------------------------
-    // tyre temperature modelling (three‑band: inside / centre / outside)
-    // ------------------------------------------------------------------
-    // A) Base temperature is influenced by track/ambient, ducting, spring
-    //    heat and tyre hysteresis.  These are already captured above as
-    //    fBaseHeat and rBaseHeat.
-    // B) Friction work and slip angle generate heat.  the real sim uses
-    //    lateral load and wheelspin; here we approximate them with a simple
-    //    proxy built from camber and toe.  More slip raises shoulder temps.
-    // C) Camber shifts vertical load between the two shoulders.  Negative
-    //    camber loads the inside, positive/low camber favours the outside.
-    // D) Pressure alters the contact patch shape, which we apply to the
-    //    centre band only – overpressure warms the centre, underpressure
-    //    cools it relative to the shoulders.
-    // The constants below were chosen to produce realistic-looking numbers
-    // in the 70‑100 °C range and to reflect the “ideal temperature spread”
-    // described in the LMU write‑up.  They are not a full physics engine,
-    // but they behave sensibly for tuning purposes.
-
-    // slip proxy: a weighted average of camber and toe
     const fSlipProxy = Math.abs(vals.fcam) * 0.7 + Math.abs(vals.ftoe) * 0.3;
     const rSlipProxy = Math.abs(vals.rcam) * 0.7 + Math.abs(vals.rtoe) * 0.3;
-    const fSlipHeat = fSlipProxy * 10;   // scales into °C
+    const fSlipHeat = fSlipProxy * 10;
     const rSlipHeat = rSlipProxy * 10;
 
-    // camber load shift: negative camber (>effort to inside) gives positive
-    // contribution to inside shoulder temperature
     const fCamberLoadShift = -vals.fcam * 5;
     const rCamberLoadShift = -vals.rcam * 5;
 
-    // outside shoulder: always at least base heat; additional heat due to
-    // slip/angle and low/positive camber (understeer, scrubbing)
     const heatF_O = fBaseHeat
         + fSlipHeat * (vals.fcam > -1 ? 1.0 : 0.5)
         + Math.max(0, vals.fcam) * 2;
@@ -908,8 +973,6 @@ function update() {
         + rSlipHeat * (vals.rcam > -1 ? 1.0 : 0.5)
         + Math.max(0, vals.rcam) * 2;
 
-    // inside shoulder: base plus a fraction of the slip heat and any camber
-    // load shift (only when camber is negative)
     const heatF_I = fBaseHeat
         + fSlipHeat * (vals.fcam < 0 ? 0.6 : 0.2)
         + Math.max(0, fCamberLoadShift);
@@ -917,16 +980,12 @@ function update() {
         + rSlipHeat * (vals.rcam < 0 ? 0.6 : 0.2)
         + Math.max(0, rCamberLoadShift);
 
-    // pressure influence on centre band
     const fPressShift = (vals.tpressure_f - optPress) * 0.43;
     const rPressShift = (vals.tpressure_r - optPress) * 0.43;
 
-    // centre temperature is average of shoulders plus pressure shift, but
-    // never below ambient/track temperature
     const heatF_C = Math.max(trackTemp, (heatF_I + heatF_O) * 0.5 + fPressShift);
     const heatR_C = Math.max(trackTemp, (heatR_I + heatR_O) * 0.5 + rPressShift);
 
-    // use centre temperature for overall thermal grip calculations
     const heatF = heatF_C;
     const heatR = heatR_C;
 
@@ -1053,11 +1112,16 @@ function update() {
             const speedMod = (c.speed - 5) / 5;
             const bumpMod = ((c.bumps || 5) - 5) / 5;
 
-            const tDf = clamp(carBaseDf + (technicalityMod * 25) - (speedMod * 15));
-            const tTs = clamp(carBaseTs + (speedMod * 30) - (technicalityMod * 20));
-            const tGr = clamp(carBaseGr + (technicalityMod * 15) + (speedMod * 10));
-            const tTu = clamp(carBaseTu + (technicalityMod * 20));
-            const tBu = clamp(carBaseBu + (bumpMod * 40));
+            // adjust how much the track characteristics influence the ghost curve
+            // based on the selected car's category. slower/less-aero cars get a
+            // reduced effect so their suggested "ideal" setup stays realistic.
+            const trackScale = getCarGhostScale();
+
+            const tDf = clamp(carBaseDf + ((technicalityMod * 25) - (speedMod * 15)) * trackScale);
+            const tTs = clamp(carBaseTs + ((speedMod * 30) - (technicalityMod * 20)) * trackScale);
+            const tGr = clamp(carBaseGr + ((technicalityMod * 15) + (speedMod * 10)) * trackScale);
+            const tTu = clamp(carBaseTu + (technicalityMod * 20) * trackScale);
+            const tBu = clamp(carBaseBu + (bumpMod * 40) * trackScale);
 
             if (els.ghostPoly) {
                 els.ghostPoly.setAttribute('points',
@@ -1129,7 +1193,6 @@ function update() {
         if (hEl) hEl.style.backgroundColor = getZoneColor(temp);
     };
 
-    // use centre-band temperature as the general tyre temperature
     updateTyreSingle('FL', heatF_C + 2);
     updateTyreSingle('FR', heatF_C);
     updateTyreSingle('RL', heatR_C + 1);
@@ -1790,7 +1853,6 @@ function hideTooltip() {
     }, 200);
 }
 
-// Prevent clicks on the tooltip panel itself from dismissing it
 tooltip.addEventListener('click', e => e.stopPropagation());
 
 function updateTooltipPos(e) {
@@ -1808,7 +1870,6 @@ function updateTooltipPos(e) {
     const tH = tooltip.offsetHeight;
     const margin = 12;
 
-    // Flip if overflowing right/bottom
     if (x + tW > winW - margin) {
         x = point.clientX - tW - xOffset;
     }
@@ -1817,7 +1878,6 @@ function updateTooltipPos(e) {
         y = point.clientY - tH - yOffset;
     }
 
-    // Final clamp (prevents any off-screen positioning)
     x = Math.max(margin, Math.min(x, winW - tW - margin));
     y = Math.max(margin, Math.min(y, winH - tH - margin));
 
@@ -1825,16 +1885,12 @@ function updateTooltipPos(e) {
     tooltip.style.top = `${y}px`;
 }
 
-// ── Info icon buttons ─────────────────────────────────────────────────────────
-// Dynamically inject an "ⓘ" button after every slider label that has tooltip
-// data. Clicking it pins/unpins the info panel; clicking elsewhere dismisses it.
 let tooltipPinned = false;
 
 document.querySelectorAll('[id$="C_label"]').forEach(labelEl => {
     const id = labelEl.id.replace('C_label', '');
     if (!TOOLTIP_DATA[id]) return;
 
-    // Group label + info button in a flex wrapper
     const wrapper = document.createElement('div');
     wrapper.className = 'flex items-center gap-1';
     labelEl.parentNode.insertBefore(wrapper, labelEl);
