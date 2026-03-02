@@ -6,7 +6,8 @@ window.CARS["ferrari_296_lmgt3"] = {
         {
             group: "Tires & Brakes",
             items: [
-                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 }, { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
                 { id: "bias", name: "Brake Bias", type: "numeric", unit: "%", min: 44.5, max: 57.0, step: 0.25, default: 52.2 },
                 {
                     id: "fbd", name: "Front Brake Duct", type: "labeled",
@@ -59,7 +60,11 @@ window.CARS["ferrari_296_lmgt3"] = {
         {
             group: "Aero & Alignment",
             items: [
-                { id: "wing", name: "Rear Wing", type: "numeric", unit: "deg", min: 0.60, max: 4.50, step: 0.65, default: 1.90 },
+                {
+                    id: "wing", name: "Rear Wing", type: "labeled", unit: "deg",
+                    options: [0.60, 1.25, 1.90, 2.55, 3.20, 3.85, 4.50].map(v => ({ label: v.toFixed(2), value: v })),
+                    default: 2
+                },
                 { id: "ftoe", name: "Front Toe", type: "numeric", unit: "deg", min: -1.003, max: 1.003, step: 0.0626875, default: -0.125 },
                 { id: "rtoe", name: "Rear Toe", type: "numeric", unit: "deg", min: -1.003, max: 1.003, step: 0.0626875, default: 0.251 },
                 { id: "fcam", name: "Front Camber", type: "numeric", unit: "deg", min: -4.6, max: -2.0, step: 0.1, default: -2.2 },

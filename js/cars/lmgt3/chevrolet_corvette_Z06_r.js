@@ -1,31 +1,22 @@
 window.CARS = window.CARS || {};
-window.CARS["corvette_z06_r"] = {
-    id: "corvette_z06_r",
+window.CARS["chevrolet_corvette_Z06_r"] = {
+    id: "chevrolet_corvette_Z06_r",
     name: "Chevrolet Corvette Z06 LMGT3.R",
     setupStructure: [
         {
             group: "Tires & Brakes",
             items: [
-                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 }, { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
-                { id: "bias", name: "Brake Bias", type: "numeric", unit: "%", min: 44.5, max: 57.0, step: 0.25, default: 51.5 },
+                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "bias", name: "Brake Bias", type: "numeric", unit: "%", min: 43.0, max: 57.0, step: 0.25, default: 51.5 },
                 {
                     id: "fbd", name: "Front Brake Duct", type: "labeled",
-                    options: [
-                        { label: "Open", value: 0.0 }, { label: "10%", value: 0.1 }, { label: "20%", value: 0.2 },
-                        { label: "30%", value: 0.3 }, { label: "40%", value: 0.4 }, { label: "50%", value: 0.5 },
-                        { label: "60%", value: 0.6 }, { label: "70%", value: 0.7 }, { label: "80%", value: 0.8 },
-                        { label: "90%", value: 0.9 }, { label: "Closed", value: 1.0 }
-                    ],
+                    options: ["Open", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "Closed"].map((label, i) => ({ label, value: i * 0.1 })),
                     default: 3
                 },
                 {
                     id: "rbd", name: "Rear Brake Duct", type: "labeled",
-                    options: [
-                        { label: "Open", value: 0.0 }, { label: "10%", value: 0.1 }, { label: "20%", value: 0.2 },
-                        { label: "30%", value: 0.3 }, { label: "40%", value: 0.4 }, { label: "50%", value: 0.5 },
-                        { label: "60%", value: 0.6 }, { label: "70%", value: 0.7 }, { label: "80%", value: 0.8 },
-                        { label: "90%", value: 0.9 }, { label: "Closed", value: 1.0 }
-                    ],
+                    options: ["Open", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "Closed"].map((label, i) => ({ label, value: i * 0.1 })),
                     default: 3
                 }
             ]
@@ -36,14 +27,14 @@ window.CARS["corvette_z06_r"] = {
                 { id: "fh", name: "Front Ride Height", type: "numeric", unit: "cm", min: 5.0, max: 7.0, step: 0.1, default: 5.4 },
                 { id: "rh", name: "Rear Ride Height", type: "numeric", unit: "cm", min: 5.0, max: 8.5, step: 0.1, default: 6.7 },
                 {
-                    id: "fs", name: "Front Springs", type: "labeled",
-                    options: [{ label: "600 lbs/in", value: 1 }, { label: "800 lbs/in", value: 2 }, { label: "1000 lbs/in", value: 3 }, { label: "1200 lbs/in", value: 4 }],
-                    default: 4
+                    id: "fs", name: "Front Springs", type: "labeled", unit: "lbs/in",
+                    options: [600, 800, 1000, 1200].map(v => ({ label: `${v} lbs/in`, value: v })),
+                    default: 3
                 },
                 {
-                    id: "rs", name: "Rear Springs", type: "labeled",
-                    options: [{ label: "1000 lbs/in", value: 1 }, { label: "1200 lbs/in", value: 2 }, { label: "1400 lbs/in", value: 3 }, { label: "1600 lbs/in", value: 4 }, { label: "1800 lbs/in", value: 5 }, { label: "2000 lbs/in", value: 6 }],
-                    default: 1
+                    id: "rs", name: "Rear Springs", type: "labeled", unit: "lbs/in",
+                    options: [1000, 1200, 1400, 1600, 1800, 2000].map(v => ({ label: `${v} lbs/in`, value: v })),
+                    default: 0
                 },
                 { id: "fpk", name: "Front Packers", type: "numeric", unit: "cm", min: 0.0, max: 6.0, step: 0.1, default: 1.2 },
                 { id: "rpk", name: "Rear Packers", type: "numeric", unit: "cm", min: 0.0, max: 6.0, step: 0.1, default: 0.0 },
@@ -67,9 +58,18 @@ window.CARS["corvette_z06_r"] = {
         {
             group: "Aero & Alignment",
             items: [
-                { id: "wing", name: "Rear Wing", type: "numeric", unit: "deg", min: 0.5, max: 9.5, step: 1.0, default: 2.5 },
-                { id: "ftoe", name: "Front Toe", type: "numeric", unit: "deg", min: -0.937, max: 0.937, step: 0.117, default: 0.000 },
-                { id: "rtoe", name: "Rear Toe", type: "numeric", unit: "deg", min: -0.937, max: 0.937, step: 0.117, default: 0.234 },
+                {
+                    id: "wing", name: "Rear Wing", type: "labeled", unit: "deg",
+                    options: [0.5, 1.5, 2.5, 3.5, 4.5, 6.5, 7.5, 8.5, 9.5].map(v => ({ label: `${v.toFixed(2)} deg`, value: v })),
+                    default: 2
+                },
+                {
+                    id: "ldwing", name: "Rear Wing", type: "labeled", unit: "deg",
+                    options: [1.2, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0].map(v => ({ label: `${v.toFixed(2)} deg`, value: v })),
+                    default: 2
+                },
+                { id: "ftoe", name: "Front Toe", type: "numeric", unit: "deg", min: -0.94, max: 0.94, step: 0.1175, default: 0.000 },
+                { id: "rtoe", name: "Rear Toe", type: "numeric", unit: "deg", min: -0.94, max: 0.94, step: 0.1175, default: 0.234 },
                 { id: "fcam", name: "Front Camber", type: "numeric", unit: "deg", min: -5.0, max: -2.0, step: 0.1, default: -2.2 },
                 { id: "rcam", name: "Rear Camber", type: "numeric", unit: "deg", min: -4.5, max: -1.0, step: 0.1, default: -1.5 }
             ]

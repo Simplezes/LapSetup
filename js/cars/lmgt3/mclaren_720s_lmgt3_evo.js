@@ -6,7 +6,8 @@ window.CARS["mclaren_720s_lmgt3_evo"] = {
         {
             group: "Tires & Brakes",
             items: [
-                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 }, { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
                 { id: "bias", name: "Brake Bias", type: "numeric", unit: "%", min: 43.0, max: 57.0, step: 0.25, default: 52.5 },
                 {
                     id: "fbd", name: "Front Brake Duct", type: "labeled",
@@ -78,7 +79,16 @@ window.CARS["mclaren_720s_lmgt3_evo"] = {
         {
             group: "Aero & Alignment",
             items: [
-                { id: "wing", name: "Rear Wing", type: "numeric", unit: "deg", min: 4.8, max: 10.7, step: 0.25, default: 9.4 },
+                {
+                    id: "wing", name: "Rear Wing", type: "labeled", unit: "deg",
+                    options: [1.75, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 5.4, 5.7, 6.1, 6.4, 6.7, 7.0, 7.3, 7.6, 7.9, 8.2, 8.5, 8.8, 9.1, 9.4, 9.7, 10.0, 10.4, 10.7].map(v => ({ label: `${v.toFixed(2)} deg`, value: v })),
+                    default: 15
+                },
+                {
+                    id: "ldwing", name: "Rear Wing", type: "labeled", unit: "deg",
+                    options: [4.8, 5.1, 5.4, 5.7, 6.1, 6.4, 6.7, 7.0, 7.3, 7.6, 7.9, 8.2, 8.5, 8.8, 9.1, 9.4, 9.7, 10.0, 10.4, 10.7].map(v => ({ label: `${v.toFixed(2)} deg`, value: v })),
+                    default: 23
+                },
                 { id: "ftoe", name: "Front Toe", type: "numeric", unit: "deg", min: -0.937, max: 0.937, step: 0.117, default: -0.117 },
                 { id: "rtoe", name: "Rear Toe", type: "numeric", unit: "deg", min: -0.937, max: 0.937, step: 0.117, default: 0.234 },
                 { id: "fcam", name: "Front Camber", type: "numeric", unit: "deg", min: -4.60, max: -1.60, step: 0.2, default: -2.20 },

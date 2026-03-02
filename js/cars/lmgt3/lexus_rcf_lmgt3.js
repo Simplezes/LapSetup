@@ -6,7 +6,8 @@ window.CARS["lexus_rcf_lmgt3"] = {
         {
             group: "Tires & Brakes",
             items: [
-                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 }, { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
                 { id: "bias", name: "Brake Bias", type: "numeric", unit: "%", min: 43.0, max: 57.0, step: 0.25, default: 51.5 },
                 {
                     id: "fbd", name: "Front Brake Duct", type: "labeled",
@@ -59,7 +60,16 @@ window.CARS["lexus_rcf_lmgt3"] = {
         {
             group: "Aero & Alignment",
             items: [
-                { id: "wing", name: "Rear Wing", type: "numeric", unit: "deg", min: 7.0, max: 13.0, step: 1.0, default: 8.0 },
+                {
+                    id: "wing", name: "Rear Wing", type: "labeled", unit: "deg",
+                    options: [1.75, 2.1, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.2, 4.5, 4.8, 5.1, 5.4, 5.7, 6.1, 6.4, 6.7, 7.0, 7.3, 7.6, 7.9, 8.2, 8.5, 8.8, 9.1, 9.4, 9.7, 10.0, 10.4, 10.7].map(v => ({ label: `${v.toFixed(2)} deg`, value: v })),
+                    default: 25
+                },
+                {
+                    id: "ldwing", name: "Rear Wing", type: "labeled", unit: "deg",
+                    options: [7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0].map(v => ({ label: `${v.toFixed(2)} deg`, value: v })),
+                    default: 1
+                },
                 { id: "ftoe", name: "Front Toe", type: "numeric", unit: "deg", min: -1.00, max: 1.00, step: 0.06, default: -0.13 },
                 { id: "rtoe", name: "Rear Toe", type: "numeric", unit: "deg", min: -1.00, max: 1.00, step: 0.06, default: 0.13 },
                 { id: "fcam", name: "Front Camber", type: "numeric", unit: "deg", min: -5.0, max: -1.8, step: 0.1, default: -2.2 },

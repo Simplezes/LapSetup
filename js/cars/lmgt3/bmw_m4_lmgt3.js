@@ -6,7 +6,8 @@ window.CARS["bmw_m4_lmgt3"] = window.CAR_DATA = {
         {
             group: "Tires & Brakes",
             items: [
-                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 }, { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_f", name: "Front Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
+                { id: "tpressure_r", name: "Rear Tire Pressure", type: "numeric", unit: "kPa", min: 136, max: 210, step: 1, default: 136 },
                 { id: "bias", name: "Brake Bias", type: "numeric", unit: "%", min: 43.0, max: 57.0, step: 0.25, default: 51.2 },
                 {
                     id: "fbd", name: "Front Brake Duct", type: "labeled",
@@ -38,10 +39,10 @@ window.CARS["bmw_m4_lmgt3"] = window.CAR_DATA = {
             items: [
                 { id: "fsb", name: "Front Slow Bump", type: "numeric", min: 0, max: 18, step: 1, default: 3 },
                 { id: "fsr", name: "Front Slow Rebound", type: "numeric", min: 0, max: 18, step: 1, default: 5 },
-                { id: "ffb", name: "Front Fast Bump", type: "numeric", min: 0, max: 18, step: 1, default: 5 },
-                { id: "ffr", name: "Front Fast Rebound", type: "numeric", min: 0, max: 18, step: 1, default: 3 },
-                { id: "rsb", name: "Rear Slow Bump", type: "numeric", min: 0, max: 18, step: 1, default: 4 },
-                { id: "rsr", name: "Rear Slow Rebound", type: "numeric", min: 0, max: 18, step: 1, default: 5 },
+                { id: "ffb", name: "Front Fast Bump", type: "numeric", min: 0, max: 18, step: 1, default: 4 },
+                { id: "ffr", name: "Front Fast Rebound", type: "numeric", min: 0, max: 18, step: 1, default: 5 },
+                { id: "rsb", name: "Rear Slow Bump", type: "numeric", min: 0, max: 18, step: 1, default: 5 },
+                { id: "rsr", name: "Rear Slow Rebound", type: "numeric", min: 0, max: 18, step: 1, default: 3 },
                 { id: "rfb", name: "Rear Fast Bump", type: "numeric", min: 0, max: 18, step: 1, default: 5 },
                 { id: "rfr", name: "Rear Fast Rebound", type: "numeric", min: 0, max: 18, step: 1, default: 3 }
             ]
@@ -49,7 +50,11 @@ window.CARS["bmw_m4_lmgt3"] = window.CAR_DATA = {
         {
             group: "Aero & Alignment",
             items: [
-                { id: "wing", name: "Rear Wing", type: "numeric", unit: "deg", min: -2.3, max: 4.6, step: 0.627272727, default: 1.4 },
+                {
+                    id: "wing", name: "Rear Wing", type: "labeled",
+                    options: [-2.3, -1.7, -1.1, -0.4, 0.2, 0.8, 1.4, 2.1, 2.7, 3.3, 3.9, 4.6].map(v => ({ label: v.toFixed(2), value: v })),
+                    default: 6
+                },
                 { id: "ftoe", name: "Front Toe", type: "numeric", unit: "deg", min: -0.937, max: 0.937, step: 0.117, default: -0.117 },
                 { id: "rtoe", name: "Rear Toe", type: "numeric", unit: "deg", min: -0.937, max: 0.937, step: 0.117, default: 0.234 },
                 { id: "fcam", name: "Front Camber", type: "numeric", unit: "deg", min: -5.00, max: -1.00, step: 0.10, default: -2.20 },
