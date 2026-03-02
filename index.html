@@ -30,10 +30,10 @@
                     <p class="text-[8px] text-slate-600 font-bold uppercase tracking-widest leading-tight">
                         Made by
                         <a href="https://github.com/Simplezes" target="_blank" rel="noopener noreferrer"
-                           class="header-credit-link">Simplezes</a>
+                            class="header-credit-link">Simplezes</a>
                         &amp;
                         <a href="https://github.com/William19D" target="_blank" rel="noopener noreferrer"
-                           class="header-credit-link">William19D</a>
+                            class="header-credit-link">William19D</a>
                     </p>
                 </div>
             </div>
@@ -344,19 +344,24 @@
                                 stroke="var(--blue)" stroke-width="1.5" />
                             <text x="100" y="8" text-anchor="middle"
                                 class="fill-slate-500 font-bold uppercase tracking-widest cursor-help hover:fill-blue-500 transition-colors"
-                                font-size="8" data-tooltip="Aerodynamic load from wings/bodywork — improves high-speed stability and cornering">Downforce</text>
+                                font-size="8"
+                                data-tooltip="Aerodynamic load from wings/bodywork — improves high-speed stability and cornering">Downforce</text>
                             <text x="195" y="70" text-anchor="start"
                                 class="fill-slate-500 font-bold uppercase tracking-widest cursor-help hover:fill-blue-500 transition-colors"
-                                font-size="8" data-tooltip="Overall traction from tyres and aero — affects cornering and braking">Grip</text>
+                                font-size="8"
+                                data-tooltip="Overall traction from tyres and aero — affects cornering and braking">Grip</text>
                             <text x="165" y="178" text-anchor="start"
                                 class="fill-slate-500 font-bold uppercase tracking-widest cursor-help hover:fill-blue-500 transition-colors"
-                                font-size="8" data-tooltip="Initial steering response and agility when entering corners">Turn-in</text>
+                                font-size="8"
+                                data-tooltip="Initial steering response and agility when entering corners">Turn-in</text>
                             <text x="35" y="178" text-anchor="end"
                                 class="fill-slate-500 font-bold uppercase tracking-widest cursor-help hover:fill-blue-500 transition-colors"
-                                font-size="8" data-tooltip="Suspension compliance — affects stability on rough surfaces">Bumps</text>
+                                font-size="8"
+                                data-tooltip="Suspension compliance — affects stability on rough surfaces">Bumps</text>
                             <text x="5" y="70" text-anchor="end"
                                 class="fill-slate-500 font-bold uppercase tracking-widest cursor-help hover:fill-blue-500 transition-colors"
-                                font-size="8" data-tooltip="Theoretical maximum velocity on long straights">Top Speed</text>
+                                font-size="8" data-tooltip="Theoretical maximum velocity on long straights">Top
+                                Speed</text>
                         </svg>
                     </div>
 
@@ -1006,6 +1011,15 @@
                             </div>
                             <input type="range" id="wing" min="-2.7" max="4.5" step="0.6" value="3.3"
                                 class="w-full h-1 bg-slate-900 rounded-none appearance-none cursor-pointer">
+
+                            <div id="wingToggleContainer" class="hidden grid grid-cols-2 gap-1 mt-3">
+                                <button id="lowDragBtn"
+                                    class="px-2 py-1.5 text-[9px] font-bold border border-white/5 hover:bg-white/5 text-slate-500 transition-all uppercase tracking-widest">Low
+                                    Drag</button>
+                                <button id="highDragBtn"
+                                    class="px-2 py-1.5 text-[9px] font-bold border border-blue-500/30 bg-blue-500/10 text-blue-400 transition-all uppercase tracking-widest active">High
+                                    Drag</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1353,6 +1367,9 @@
         </div>
     </div>
 
+    <script src="js/ui_map.js"></script>
+    <script src="js/formulas.js"></script>
+    <script src="js/setup_service.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/physics.js"></script>
     <script src="js/app.js"></script>

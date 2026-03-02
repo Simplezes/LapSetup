@@ -2,222 +2,35 @@ let CAR = (window.CARS && window.CARS['bmw_m4_lmgt3']) ? window.CARS['bmw_m4_lmg
 if (!CAR && window.CARS) CAR = Object.values(window.CARS)[0];
 const gatherDefaults = (structure) => {
     const defs = {};
+    if (!structure) return defs;
     structure.forEach(group => {
         group.items.forEach(item => {
-            defs[item.id] = item.default;
+            if (item.type === 'labeled') {
+                const idx = item.default;
+                const opt = item.options && item.options[idx];
+                if (opt !== undefined) {
+                    defs[item.id] = (typeof opt === 'object' && opt.value !== undefined) ? opt.value : opt;
+                } else {
+                    defs[item.id] = item.default;
+                }
+            } else {
+                defs[item.id] = item.default;
+            }
         });
     });
     return defs;
 };
-let DEFAULTS = CAR.setupStructure ? gatherDefaults(CAR.setupStructure) : CAR.defaults;
+window.gatherDefaults = gatherDefaults;
+let DEFAULTS = CAR.setupStructure ? gatherDefaults(CAR.setupStructure) : (CAR.defaults || {});
 let PRESETS = CAR.presets;
 let PHYSICS_DATA = null;
 let SELECTED_TRACK_ID = 'sarthe';
 
-async function initPhysics() {
-    try {
-        const [lmgt3Res, lmp2Res, lmp3Res] = await Promise.all([
-            fetch('js/cars/lmgt3/physics_lmgt3.json'),
-            fetch('js/cars/lmp2/physics_lmp2.json'),
-            fetch('js/cars/lmp3/physics_lmp3.json')
-        ]);
+const els = window.LMA_UI ? window.LMA_UI.els : {};
+const { clamp, getPt, shapeDamp, getThermalGrip, getStandardizedDelta, getPhysVal } = window.LMA_Formulas || {};
 
-        const lmgt3Data = await lmgt3Res.json();
-        const lmp2Data = await lmp2Res.json();
-        const lmp3Data = await lmp3Res.json();
-
-        PHYSICS_DATA = {
-            cars: [...(lmgt3Data.cars || []), ...(lmp2Data.cars || []), ...(lmp3Data.cars || [])]
-        };
-
-        if (CAR && CAR.id && PHYSICS_DATA.cars) {
-            const p = PHYSICS_DATA.cars.find(c => c.id === CAR.id);
-            if (p) CAR.physics = { ...CAR.physics, ...p };
-        }
-        update();
-    } catch (e) {
-        console.error("Failed to load physics JSON files", e);
-    }
-}
-initPhysics();
-
-const els = {
-    tpressure_f: document.getElementById('tpressure_f'),
-    tpressure_r: document.getElementById('tpressure_r'),
-    fcam: document.getElementById('fcam'),
-    rcam: document.getElementById('rcam'),
-    bias: document.getElementById('bias'),
-    fbd: document.getElementById('fbd'),
-    rbd: document.getElementById('rbd'),
-    fs: document.getElementById('fs'),
-    rs: document.getElementById('rs'),
-    fpk: document.getElementById('fpk'),
-    rpk: document.getElementById('rpk'),
-    third_Fspring: document.getElementById('third_Fspring'),
-    third_fpk: document.getElementById('third_fpk'),
-    third_Rspring: document.getElementById('third_Rspring'),
-    third_rpk: document.getElementById('third_rpk'),
-    fh: document.getElementById('fh'),
-    rh: document.getElementById('rh'),
-    fsb: document.getElementById('fsb'),
-    fsr: document.getElementById('fsr'),
-    ffb: document.getElementById('ffb'),
-    ffr: document.getElementById('ffr'),
-    rsb: document.getElementById('rsb'),
-    rsr: document.getElementById('rsr'),
-    rfb: document.getElementById('rfb'),
-    rfr: document.getElementById('rfr'),
-    ftoe: document.getElementById('ftoe'),
-    rtoe: document.getElementById('rtoe'),
-    farb: document.getElementById('farb'),
-    rarb: document.getElementById('rarb'),
-    wing: document.getElementById('wing'),
-    tender_f: document.getElementById('tender_f'),
-
-    // Radar Targets
-    ghostPoly: document.getElementById('ghostPoly'),
-    barTargetDf: document.getElementById('barTargetDf'),
-    barTargetGr: document.getElementById('barTargetGr'),
-    barTargetTu: document.getElementById('barTargetTu'),
-    barTargetBu: document.getElementById('barTargetBu'),
-    barTargetTs: document.getElementById('barTargetTs'),
-
-    // Readouts
-    tp_fV: document.getElementById('tp_fV'),
-    tp_rV: document.getElementById('tp_rV'),
-    fcV: document.getElementById('fcV'),
-    rcV: document.getElementById('rcV'),
-    bV: document.getElementById('bV'),
-    fbdV: document.getElementById('fbdV'),
-    rbdV: document.getElementById('rbdV'),
-    fsV: document.getElementById('fsV'),
-    rsV: document.getElementById('rsV'),
-    fpkV: document.getElementById('fpkV'),
-    rpkV: document.getElementById('rpkV'),
-    third_FspringV: document.getElementById('third_FspringV'),
-    third_fpkV: document.getElementById('third_fpkV'),
-    third_RspringV: document.getElementById('third_RspringV'),
-    third_rpkV: document.getElementById('third_rpkV'),
-    fhV: document.getElementById('fhV'),
-    rhV: document.getElementById('rhV'),
-    ftoeV: document.getElementById('ftoeV'),
-    rtoeV: document.getElementById('rtoeV'),
-    farbV: document.getElementById('farbV'),
-    rarbV: document.getElementById('rarbV'),
-    wingV: document.getElementById('wingV'),
-    tender_fV: document.getElementById('tender_fV'),
-    rakeV: document.getElementById('rakeV'),
-    recoBias: document.getElementById('recoBias'),
-
-    // Dampers Values
-    fsbV: document.getElementById('fsbV'),
-    fsrV: document.getElementById('fsrV'),
-    ffbV: document.getElementById('ffbV'),
-    ffrV: document.getElementById('ffrV'),
-    rsbV: document.getElementById('rsbV'),
-    rsrV: document.getElementById('rsrV'),
-    rfbV: document.getElementById('rfbV'),
-    rfrV: document.getElementById('rfrV'),
-
-    // Clicks (now bound to labels)
-    tp_fC: document.getElementById('tp_fC_label'),
-    tp_rC: document.getElementById('tp_rC_label'),
-    fcC: document.getElementById('fcC_label'),
-    rcC: document.getElementById('rcC_label'),
-    bC: document.getElementById('bC_label'),
-    fbdC: document.getElementById('fbdC_label'),
-    rbdC: document.getElementById('rbdC_label'),
-    fsC: document.getElementById('fsC_label'),
-    rsC: document.getElementById('rsC_label'),
-    fpkC: document.getElementById('fpkC_label'),
-    rpkC: document.getElementById('rpkC_label'),
-    third_FspringC: document.getElementById('third_FspringC_label'),
-    third_fpkC: document.getElementById('third_fpkC_label'),
-    third_RspringC: document.getElementById('third_RspringC_label'),
-    third_rpkC: document.getElementById('third_rpkC_label'),
-    fhC: document.getElementById('fhC_label'),
-    rhC: document.getElementById('rhC_label'),
-    fsbC: document.getElementById('fsbC_label'),
-    fsrC: document.getElementById('fsrC_label'),
-    ffbC: document.getElementById('ffbC_label'),
-    ffrC: document.getElementById('ffrC_label'),
-    rsbC: document.getElementById('rsbC_label'),
-    rsrC: document.getElementById('rsrC_label'),
-    rfbC: document.getElementById('rfbC_label'),
-    rfrC: document.getElementById('rfrC_label'),
-    ftoeC: document.getElementById('ftoeC_label'),
-    rtoeC: document.getElementById('rtoeC_label'),
-    farbC: document.getElementById('farbC_label'),
-    rarbC: document.getElementById('rarbC_label'),
-    wingC: document.getElementById('wingC_label'),
-    tender_fC: document.getElementById('tender_fC_label'),
-
-    // Chart & Aero
-    spider: document.getElementById('spiderPoly'),
-    ghost: document.getElementById('ghostPoly'),
-    cop: document.getElementById('cop'),
-    fP: document.getElementById('fP'),
-    rP: document.getElementById('rP'),
-    steerStatus: document.getElementById('steerStatus'),
-    sync: document.getElementById('sync'),
-    linkTiresBtn: document.getElementById('linkTiresBtn'),
-
-    viewRadarBtn: document.getElementById('viewRadar'),
-    viewBarsBtn: document.getElementById('viewBars'),
-    radarView: document.getElementById('radarView'),
-    barsView: document.getElementById('barsView'),
-
-    modeBasic: document.getElementById('modeBasic'),
-    modeAdvanced: document.getElementById('modeAdvanced'),
-    carName: document.getElementById('carName'),
-
-    // Environment UI
-    trackTemp: document.getElementById('trackTemp'),
-    trackTempV: document.getElementById('trackTempV'),
-    weatherChips: document.getElementById('weatherChips'),
-    tempPresets: document.getElementById('tempPresets'),
-
-    // Garage
-    openGarageBtn: document.getElementById('openGarageBtn'),
-    closeGarageBtn: document.getElementById('closeGarageBtn'),
-    garageOverlay: document.getElementById('garageOverlay'),
-    garageGrid: document.getElementById('garageGrid'),
-    currentCar: document.getElementById('currentCar'),
-    currentCarClass: document.getElementById('currentCarClass'),
-    machineDropdown: document.getElementById('machineDropdown'),
-
-    // Thermal Grid
-    tyreFL: document.getElementById('tyreFL'),
-    tyreFR: document.getElementById('tyreFR'),
-    tyreRL: document.getElementById('tyreRL'),
-    tyreRR: document.getElementById('tyreRR'),
-    dampFL: document.getElementById('dampFL'),
-    dampFR: document.getElementById('dampFR'),
-    dampRL: document.getElementById('dampRL'),
-    dampRR: document.getElementById('dampRR'),
-
-    // Fuel Calculator
-    fuelModeTime: document.getElementById('fuelModeTime'),
-    fuelModeLaps: document.getElementById('fuelModeLaps'),
-    fuelTimeInputs: document.getElementById('fuelTimeInputs'),
-    fuelLapsInput: document.getElementById('fuelLapsInput'),
-    fuelHours: document.getElementById('fuelHours'),
-    fuelMinutes: document.getElementById('fuelMinutes'),
-    fuelTotalLaps: document.getElementById('fuelTotalLaps'),
-    fuelLapMin: document.getElementById('fuelLapMin'),
-    fuelLapSec: document.getElementById('fuelLapSec'),
-    fuelLapMs: document.getElementById('fuelLapMs'),
-    fuelPerLapInput: document.getElementById('fuelPerLapInput'),
-    fuelResultLaps: document.getElementById('fuelResultLaps'),
-    fuelResultFuel: document.getElementById('fuelResultFuel'),
-    fuelResultSafety: document.getElementById('fuelResultSafety'),
-
-    // Track Selection
-    openTrackBtn: document.getElementById('openTrackBtn'),
-    trackDropdown: document.getElementById('trackDropdown'),
-    currentTrack: document.getElementById('currentTrack'),
-    trackAdvice: document.getElementById('trackAdvice'),
-};
+function getItemConfig(id) { return window.LMA_Utils ? window.LMA_Utils.getItemConfig(CAR, id) : null; }
+function getParamRange(id) { return window.LMA_Utils ? window.LMA_Utils.getParamRange(CAR, id) : { min: 0, max: 100, step: 1 }; }
 
 let currentCompound = 'MEDIUM';
 let targetB = DEFAULTS.bias;
@@ -257,21 +70,23 @@ if (CAR.setupStructure) {
 function setAppMode(mode) {
     if (mode === 'advanced') {
         document.body.classList.remove('mode-basic');
-        els.modeAdvanced.classList.add('active');
-        els.modeBasic.classList.remove('active');
+        if (els.modeAdvanced) els.modeAdvanced.classList.add('active');
+        if (els.modeBasic) els.modeBasic.classList.remove('active');
     } else {
         document.body.classList.add('mode-basic');
-        els.modeBasic.classList.add('active');
-        els.modeAdvanced.classList.remove('active');
+        if (els.modeBasic) els.modeBasic.classList.add('active');
+        if (els.modeAdvanced) els.modeAdvanced.classList.remove('active');
     }
     localStorage.setItem('lma_mode', mode);
 }
 
-els.modeBasic.onclick = () => setAppMode('basic');
-els.modeAdvanced.onclick = () => setAppMode('advanced');
+
+if (els.modeBasic) els.modeBasic.onclick = () => setAppMode('basic');
+if (els.modeAdvanced) els.modeAdvanced.onclick = () => setAppMode('advanced');
 
 const savedMode = localStorage.getItem('lma_mode') || 'basic';
 setAppMode(savedMode);
+
 
 let tiresLinked = true;
 if (els.linkTiresBtn) {
@@ -332,16 +147,19 @@ function getTrackData(id) {
 function initTracks() {
     if (!window.GLOBAL_TRACKS || !els.openTrackBtn || !els.trackDropdown) return;
 
-    els.openTrackBtn.onclick = (e) => {
-        e.stopPropagation();
-        const isShown = els.trackDropdown.classList.contains('show');
-        if (isShown) {
-            els.trackDropdown.classList.remove('show');
-        } else {
-            renderTrackDropdown();
-            els.trackDropdown.classList.add('show');
-        }
-    };
+    if (els.openTrackBtn) {
+        els.openTrackBtn.onclick = (e) => {
+            e.stopPropagation();
+            const isShown = els.trackDropdown.classList.contains('show');
+            if (isShown) {
+                els.trackDropdown.classList.remove('show');
+            } else {
+                renderTrackDropdown();
+                els.trackDropdown.classList.add('show');
+            }
+        };
+    }
+
 
     window.addEventListener('click', (e) => {
         if (!els.trackDropdown.contains(e.target) && e.target !== els.openTrackBtn) {
@@ -418,17 +236,20 @@ function renderMachineDropdown() {
 function initMachineDropdown() {
     if (!els.openGarageBtn || !els.machineDropdown) return;
 
-    els.openGarageBtn.onclick = (e) => {
-        e.stopPropagation();
-        const isShown = els.machineDropdown.classList.contains('show');
-        if (isShown) {
-            els.machineDropdown.classList.remove('show');
-        } else {
-            if (els.trackDropdown) els.trackDropdown.classList.remove('show');
-            renderMachineDropdown();
-            els.machineDropdown.classList.add('show');
-        }
-    };
+    if (els.openGarageBtn) {
+        els.openGarageBtn.onclick = (e) => {
+            e.stopPropagation();
+            const isShown = els.machineDropdown.classList.contains('show');
+            if (isShown) {
+                els.machineDropdown.classList.remove('show');
+            } else {
+                if (els.trackDropdown) els.trackDropdown.classList.remove('show');
+                renderMachineDropdown();
+                els.machineDropdown.classList.add('show');
+            }
+        };
+    }
+
 
     window.addEventListener('click', (e) => {
         if (!els.machineDropdown.contains(e.target) && e.target !== els.openGarageBtn) {
@@ -437,7 +258,7 @@ function initMachineDropdown() {
     });
 }
 
-initMachineDropdown();
+
 
 function renderTrackDropdown() {
     if (!els.trackDropdown || !window.GLOBAL_TRACKS) return;
@@ -528,7 +349,7 @@ function selectTrack(id) {
     }
 }
 
-initTracks();
+
 
 function initTooltips() {
     const tooltip = document.createElement('div');
@@ -601,7 +422,7 @@ function initTooltips() {
     });
 }
 
-initTooltips();
+
 
 function updateSliderFill(input) {
     const min = parseFloat(input.min);
@@ -610,17 +431,6 @@ function updateSliderFill(input) {
     const pct = ((val - min) / (max - min)) * 100;
     input.style.setProperty('--val', pct + '%');
 }
-
-function getPt(angle, val) {
-    const r = (val / 100) * 80;
-    const rad = (angle - 90) * Math.PI / 180;
-    return `${100 + r * Math.cos(rad)},${100 + r * Math.sin(rad)}`;
-}
-
-const clamp = (v, min = 5, max = 100) => Math.min(max, Math.max(min, v));
-
-const getItemConfig = (id) => window.LMA_Utils.getItemConfig(CAR, id);
-const getParamRange = (id) => window.LMA_Utils.getParamRange(CAR, id);
 
 const getArbLabel = (val, type = 'farb') => {
     const config = getItemConfig(type);
@@ -641,7 +451,11 @@ function update() {
 
     const vals = {};
     Object.keys(DEFAULTS).forEach(key => {
-        vals[key] = Math.round(parseFloat(els[key].value) * 10000000) / 10000000;
+        if (els[key] && els[key].value !== undefined) {
+            vals[key] = Math.round(parseFloat(els[key].value) * 10000000) / 10000000;
+        } else {
+            vals[key] = DEFAULTS[key];
+        }
     });
 
     const setLabel = (readoutId, val, setupId = null) => {
@@ -800,32 +614,13 @@ function update() {
     const damperCurve = phys.damperCurve || 'linear';
     const tyreWindow = phys.tyreWindow || [80, 90];
 
+    const physValLocal = (id, val) => getPhysVal(id, val, CAR);
     const getRangeDelta = (id) => {
         const r = getParamRange(id);
-        return Math.abs(r.max - r.min) || 1;
+        return r.max - r.min;
     };
 
-    const getPhysVal = (id, sliderVal) => {
-        const config = getItemConfig(id);
-        if (config && config.type === 'labeled') {
-            const opt = config.options[sliderVal];
-            return (typeof opt === 'object' && opt.value !== undefined) ? opt.value : sliderVal;
-        }
-        return sliderVal;
-    };
 
-    const norm = (id, v) => {
-        const physV = getPhysVal(id, v);
-        let defaultVal = DEFAULTS[id];
-        if (defaultVal === undefined) {
-            const df = DEFAULTS[`${id}_f`] ?? 0;
-            const dr = DEFAULTS[`${id}_r`] ?? 0;
-            defaultVal = (df + dr) / 2;
-        }
-        return (physV - defaultVal) / getRangeDelta(id);
-    };
-
-    const optPress = (CAR.physics?.tyre_physics?.compound_medium?.optimal_pressure_kpa) || 190;
 
     const fsbRange = getParamRange('fsb');
     const fsrRange = getParamRange('fsr');
@@ -845,21 +640,30 @@ function update() {
     const fDampRange = (fsbRange.max + fsrRange.max + ffbRange.max + ffrRange.max) / 4;
     const rDampRange = (rsbRange.max + rsrRange.max + rfbRange.max + rfrRange.max) / 4;
 
-    const nWing = norm('wing', vals.wing);
-    const nFARB = norm('farb', vals.farb);
-    const nRARB = norm('rarb', vals.rarb);
-    const nFS = norm('fs', vals.fs);
-    const nRS = norm('rs', vals.rs);
-    const nFH = norm('fh', vals.fh);
-    const nRH = norm('rh', vals.rh);
-    const nFToe = norm('ftoe', vals.ftoe);
-    const nRToe = norm('rtoe', vals.rtoe);
-    const nFCam = norm('fcam', vals.fcam);
-    const nRCam = norm('rcam', vals.rcam);
+    const stdDeltaLocal = (id, raw) => getStandardizedDelta(CAR, DEFAULTS, id, raw);
+
+
+
+    const nWing = stdDeltaLocal('wing', vals.wing);
+    const nFARB = stdDeltaLocal('farb', vals.farb);
+    const nRARB = stdDeltaLocal('rarb', vals.rarb);
+    const nFS = stdDeltaLocal('fs', vals.fs);
+    const nRS = stdDeltaLocal('rs', vals.rs);
+    const nFH = stdDeltaLocal('fh', vals.fh);
+    const nRH = stdDeltaLocal('rh', vals.rh);
+    const nFToe = stdDeltaLocal('ftoe', vals.ftoe);
+    const nRToe = stdDeltaLocal('rtoe', vals.rtoe);
+    const nFCam = stdDeltaLocal('fcam', vals.fcam);
+    const nRCam = stdDeltaLocal('rcam', vals.rcam);
+
+
+    const optPress = (CAR.physics?.tyre_physics?.compound_medium?.optimal_pressure_kpa) || 190;
+
     const nPressF = (vals.tpressure_f - optPress) / (getRangeDelta('tpressure_f') || 1);
     const nPressR = (vals.tpressure_r - optPress) / (getRangeDelta('tpressure_r') || 1);
-    const nFBD = norm('fbd', vals.fbd);
-    const nRBD = norm('rbd', vals.rbd);
+    const nFBD = stdDeltaLocal('fbd', vals.fbd);
+    const nRBD = stdDeltaLocal('rbd', vals.rbd);
+
 
     const nFSB = (vals.fsb - DEFAULTS.fsb) / (fSlowRange || 1);
     const nFSR = (vals.fsr - DEFAULTS.fsr) / (fSlowRange || 1);
@@ -875,11 +679,7 @@ function update() {
     const nFFast = (nFFB + nFFR) / 2;
     const nRFast = (nRFB + nRFR) / 2;
 
-    const shapeDamp = (v) => {
-        if (damperCurve === 'progressive') return v > 0 ? Math.min(v * v * 2.5, 1) : v;
-        if (damperCurve === 'digressive') return v > 0 ? Math.min(Math.sqrt(v) * 1.2, 1) : v;
-        return v;
-    };
+    const shapeDamp = window.LMA_Formulas.shapeDamp;
     const sFSlow = shapeDamp(nFSlow);
     const sRSlow = shapeDamp(nRSlow);
     const sFFast = shapeDamp(nFFast);
@@ -941,14 +741,15 @@ function update() {
     const rRollStiff = (nRARB * 26 + nRS * 11) * motionRatioR;
     const lltd = (fRollStiff - rRollStiff) * (0.4 + mechanicalBias);
 
-    const trackTemp = parseFloat(els.trackTemp.value);
+    const trackTemp = parseFloat(els.trackTemp.value) || 0;
     const weatherVal = document.querySelector('.weather-chip.active')?.dataset.value || 'clear';
     const weatherFactors = { 'clear': 0, 'cloudy': -5, 'drizzle': -12, 'rain': -20, 'storm': -30 };
     const weatherFactor = weatherFactors[weatherVal] ?? 0;
     const baseHeat = trackTemp + weatherFactor;
 
-    const fDuctHeat = getPhysVal('fbd', vals.fbd) * 26;
-    const rDuctHeat = getPhysVal('rbd', vals.rbd) * 20;
+    const fDuctHeat = physValLocal('fbd', vals.fbd) * 26;
+    const rDuctHeat = physValLocal('rbd', vals.rbd) * 20;
+
 
     const fSpringHeatMod = nFS * 5;
     const rSpringHeatMod = nRS * 5;
@@ -1003,14 +804,7 @@ function update() {
     const moistureLevel = { 'clear': 0, 'cloudy': 0.04, 'drizzle': 0.35, 'rain': 0.75, 'storm': 1.0 };
     const moisture = moistureLevel[weatherVal] ?? 0;
     const effectiveCmpGrip = cmpProfile.peak * (1 - moisture) + cmpProfile.peak * cmpProfile.wetGrip * moisture;
-    const getThermalGrip = (t, profile) => {
-        const { lo, hi, degrade, peak } = profile;
-        if (t < 50) return 0.68;
-        if (t < lo) return 0.68 + ((t - 50) / Math.max(lo - 50, 1)) * (peak - 0.68);
-        if (t <= hi) return peak;
-        const over = t - hi;
-        return Math.max(0.55, peak - over * degrade - (over > 12 ? (over - 12) * degrade * 1.8 : 0));
-    };
+    const getThermalGrip = (t, profile) => window.LMA_Formulas.getThermalGrip(t, profile);
 
     const tGripF = getThermalGrip(heatF, cmpProfile);
     const tGripR = getThermalGrip(heatR, cmpProfile);
@@ -1095,9 +889,12 @@ function update() {
         - Math.abs(nRake) * 5
     );
 
-    els.spider.setAttribute('points',
-        `${getPt(0, finalStab)} ${getPt(72, finalGrip)} ${getPt(144, finalRot)} ${getPt(216, finalAbs)} ${getPt(288, finalSpd)}`
-    );
+    if (els.spiderPoly) {
+        els.spiderPoly.setAttribute('points',
+            `${getPt(0, finalStab)} ${getPt(72, finalGrip)} ${getPt(144, finalRot)} ${getPt(216, finalAbs)} ${getPt(288, finalSpd)}`
+        );
+    }
+
 
     if (window.GLOBAL_TRACKS && SELECTED_TRACK_ID) {
         const track = getTrackData(SELECTED_TRACK_ID);
@@ -1259,112 +1056,14 @@ function switchView(target) {
 if (els.viewRadarBtn) els.viewRadarBtn.onclick = () => switchView('radar');
 if (els.viewBarsBtn) els.viewBarsBtn.onclick = () => switchView('bars');
 
-function getStorageKey() {
-    return `lma_saved_setup_${CAR.id}`;
-}
-
-function gatherCurrentSetup() {
-    const values = {};
-    const allInputIds = [
-        'tpressure_f', 'tpressure_r', 'fcam', 'rcam', 'bias', 'fbd', 'rbd',
-        'fs', 'rs', 'fpk', 'rpk', 'third_Fspring', 'third_fpk', 'third_Rspring', 'third_rpk',
-        'fh', 'rh', 'fsb', 'fsr', 'ffb', 'ffr', 'rsb', 'rsr', 'rfb', 'rfr',
-        'ftoe', 'rtoe', 'farb', 'rarb', 'wing', 'tender_f'
-    ];
-    allInputIds.forEach(id => {
-        if (els[id]) values[id] = parseFloat(els[id].value);
-    });
-    return values;
-}
-
-function saveCurrentSetup() {
-    const setup = gatherCurrentSetup();
-    localStorage.setItem(getStorageKey(), JSON.stringify(setup));
-    renderPresets();
-    const btn = document.getElementById('saveSetupBtn');
-    if (btn) {
-        btn.textContent = '✓ SAVED';
-        btn.classList.add('!bg-green-500/30', '!text-green-300');
-        setTimeout(() => {
-            btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> SAVE SETUP`;
-            btn.classList.remove('!bg-green-500/30', '!text-green-300');
-        }, 1500);
-    }
-}
-
-function deleteSavedSetup() {
-    localStorage.removeItem(getStorageKey());
-    renderPresets();
-}
+const getStorageKey = () => window.LMA_Setup.getStorageKey(CAR);
+const gatherCurrentSetup = () => window.LMA_Setup.gatherCurrentSetup(CAR, els);
+const saveCurrentSetup = () => window.LMA_Setup.saveCurrentSetup(CAR, els);
+const deleteSavedSetup = (index) => window.LMA_Setup.deleteSavedSetup(CAR, index, els);
 
 const presetContainer = document.getElementById('presetContainer');
 
-function renderPresets() {
-    presetContainer.innerHTML = '';
-
-    const savedRaw = localStorage.getItem(getStorageKey());
-    if (savedRaw) {
-        const savedValues = JSON.parse(savedRaw);
-        const savedBtn = document.createElement('button');
-        savedBtn.className = 'preset-btn preset-btn--saved';
-        savedBtn.title = 'Your saved setup for this car';
-        savedBtn.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-3.5 h-3.5 opacity-80">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-            </svg>
-            <span class="flex-1">MY SETUP</span>
-        `;
-        savedBtn.onclick = () => {
-            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-            savedBtn.classList.add('active');
-            Object.entries(savedValues).forEach(([key, val]) => {
-                if (els[key]) {
-                    els[key].value = val;
-                    updateSliderFill(els[key]);
-                }
-            });
-            update();
-        };
-        presetContainer.appendChild(savedBtn);
-
-        const sep = document.createElement('div');
-        sep.className = 'border-t border-white/5 my-1 mx-1';
-        presetContainer.appendChild(sep);
-    }
-
-    Object.entries(PRESETS).forEach(([name, preset]) => {
-        const btn = document.createElement('button');
-        btn.className = 'preset-btn';
-        btn.title = preset.desc;
-        btn.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 opacity-50"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <span class="flex-1">${name.toUpperCase()}</span>
-        `;
-        btn.onclick = () => {
-            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            Object.entries(preset.values).forEach(([key, val]) => {
-                if (els[key]) {
-                    els[key].value = val;
-                    updateSliderFill(els[key]);
-                }
-            });
-            update();
-        };
-        presetContainer.appendChild(btn);
-    });
-
-    const deleteBtn = document.getElementById('deleteSetupBtn');
-    if (deleteBtn) {
-        if (savedRaw) {
-            deleteBtn.classList.remove('opacity-30', 'cursor-not-allowed');
-            deleteBtn.disabled = false;
-        } else {
-            deleteBtn.classList.add('opacity-30', 'cursor-not-allowed');
-            deleteBtn.disabled = true;
-        }
-    }
-}
+const renderPresets = () => window.LMA_Setup.renderPresets(CAR, els);
 renderPresets();
 
 const saveSetupBtn = document.getElementById('saveSetupBtn');
@@ -1390,6 +1089,26 @@ function loadCar(carId) {
     }
 
     if (CAR.setupStructure) {
+        const wingHigh = CAR.setupStructure.reduce((acc, g) => acc || g.items.find(i => i.id === 'wing_highdrag'), null);
+        if (wingHigh) {
+            const wingActive = CAR.setupStructure.reduce((acc, g) => acc || g.items.find(i => i.id === 'wing'), null);
+            if (wingActive) {
+                wingHigh.id = 'wing';
+                wingActive.id = 'ldwing';
+            }
+        }
+
+        const hasLdWing = CAR.setupStructure.some(g => g.items.some(i => i.id === 'ldwing'));
+        if (hasLdWing && els.wingToggleContainer) {
+            els.wingToggleContainer.classList.remove('hidden');
+            els.highDragBtn.classList.add('active', 'border-blue-500/30', 'bg-blue-500/10', 'text-blue-400');
+            els.highDragBtn.classList.remove('border-white/5', 'text-slate-500');
+            els.lowDragBtn.classList.remove('active', 'border-blue-500/30', 'bg-blue-500/10', 'text-blue-400');
+            els.lowDragBtn.classList.add('border-white/5', 'text-slate-500');
+        } else if (els.wingToggleContainer) {
+            els.wingToggleContainer.classList.add('hidden');
+        }
+
         CAR.setupStructure.forEach(group => {
             group.items.forEach(item => {
                 if (els[item.id] && els[item.id].tagName === 'INPUT') {
@@ -1456,17 +1175,24 @@ document.querySelectorAll('input[type="range"]').forEach(input => {
     updateSliderFill(input);
 });
 
-els.sync.onclick = () => {
-    els.bias.value = targetB;
-    updateSliderFill(els.bias);
-    update();
-};
+if (els.sync) {
+    els.sync.onclick = () => {
+        if (els.bias) {
+            els.bias.value = targetB;
+            updateSliderFill(els.bias);
+        }
+        update();
+    };
+}
 
-els.trackTemp.oninput = () => {
-    els.trackTempV.innerText = els.trackTemp.value + "°C";
-    updateSliderFill(els.trackTemp);
-    update();
-};
+if (els.trackTemp) {
+    els.trackTemp.oninput = () => {
+        if (els.trackTempV) els.trackTempV.innerText = els.trackTemp.value + "°C";
+        updateSliderFill(els.trackTemp);
+        update();
+    };
+}
+
 
 if (els.tempPresets) {
     els.tempPresets.querySelectorAll('button').forEach(btn => {
@@ -1500,6 +1226,69 @@ const resetMap = {
     ftoeC_label: 'ftoe', rtoeC_label: 'rtoe', farbC_label: 'farb', rarbC_label: 'rarb', wingC_label: 'wing',
     tender_fC_label: 'tender_f'
 };
+
+function setWingDragMode(isLowDrag) {
+    if (!CAR || !CAR.setupStructure) return;
+
+    let wingItem = null;
+    let ldWingItem = null;
+
+    for (const group of CAR.setupStructure) {
+        for (const item of group.items) {
+            if (item.id === 'wing_highdrag') wingItem = item;
+            if (item.id === 'ldwing') ldWingItem = item;
+            if (item.id === 'wing') {
+                if (!wingItem) wingItem = item;
+                else ldWingItem = item;
+            }
+        }
+    }
+
+    if (!wingItem || !ldWingItem) return;
+
+    // Swap configurations
+    if (isLowDrag && wingItem.id === 'wing') {
+        wingItem.id = 'wing_highdrag';
+        ldWingItem.id = 'wing';
+    } else if (!isLowDrag && ldWingItem.id === 'wing') {
+        ldWingItem.id = 'ldwing';
+        wingItem.id = 'wing';
+    }
+
+    // Update slider attributes
+    const activeItem = LMA_Utils.getItemConfig(CAR, 'wing');
+    if (els.wing && activeItem) {
+        if (activeItem.type === 'labeled') {
+            els.wing.min = 0;
+            els.wing.max = activeItem.options.length - 1;
+            els.wing.step = 1;
+        } else {
+            els.wing.min = activeItem.min;
+            els.wing.max = activeItem.max;
+            els.wing.step = activeItem.step;
+        }
+        els.wing.value = activeItem.default;
+        updateSliderFill(els.wing);
+    }
+
+    // Update UI buttons
+    if (isLowDrag) {
+        els.lowDragBtn.classList.add('active', 'border-blue-500/30', 'bg-blue-500/10', 'text-blue-400');
+        els.lowDragBtn.classList.remove('border-white/5', 'text-slate-500');
+        els.highDragBtn.classList.remove('active', 'border-blue-500/30', 'bg-blue-500/10', 'text-blue-400');
+        els.highDragBtn.classList.add('border-white/5', 'text-slate-500');
+    } else {
+        els.highDragBtn.classList.add('active', 'border-blue-500/30', 'bg-blue-500/10', 'text-blue-400');
+        els.highDragBtn.classList.remove('border-white/5', 'text-slate-500');
+        els.lowDragBtn.classList.remove('active', 'border-blue-500/30', 'bg-blue-500/10', 'text-blue-400');
+        els.lowDragBtn.classList.add('border-white/5', 'text-slate-500');
+    }
+
+    update();
+}
+
+if (els.lowDragBtn) els.lowDragBtn.onclick = () => setWingDragMode(true);
+if (els.highDragBtn) els.highDragBtn.onclick = () => setWingDragMode(false);
 
 Object.entries(resetMap).forEach(([clickId, slideId]) => {
     const clickEl = document.getElementById(clickId);
@@ -1607,24 +1396,6 @@ function initFuelCalculator() {
 update();
 initFuelCalculator();
 
-function setMode(mode) {
-    if (mode === 'advanced') {
-        document.body.classList.remove('mode-basic');
-        els.modeAdvanced.classList.add('active');
-        els.modeBasic.classList.remove('active');
-    } else {
-        document.body.classList.add('mode-basic');
-        els.modeAdvanced.classList.remove('active');
-        els.modeBasic.classList.add('active');
-    }
-}
-
-if (els.modeBasic && els.modeAdvanced) {
-    els.modeBasic.onclick = () => setMode('basic');
-    els.modeAdvanced.onclick = () => setMode('advanced');
-}
-
-setMode('advanced');
 const TOOLTIP_DATA = {
     'tpressure_f': {
         title: 'Front Tire Pressure',
@@ -1952,3 +1723,38 @@ document.addEventListener('click', () => {
         hideTooltip();
     }
 });
+
+async function initPhysics() {
+    try {
+        const [lmgt3Res, lmp2Res, lmp3Res] = await Promise.all([
+            fetch('js/cars/lmgt3/physics_lmgt3.json'),
+            fetch('js/cars/lmp2/physics_lmp2.json'),
+            fetch('js/cars/lmp3/physics_lmp3.json')
+        ]);
+
+        const lmgt3Data = await lmgt3Res.json();
+        const lmp2Data = await lmp2Res.json();
+        const lmp3Data = await lmp3Res.json();
+
+        PHYSICS_DATA = {
+            cars: [...(lmgt3Data.cars || []), ...(lmp2Data.cars || []), ...(lmp3Data.cars || [])]
+        };
+
+        if (CAR && CAR.id && PHYSICS_DATA.cars) {
+            const p = PHYSICS_DATA.cars.find(c => c.id === CAR.id);
+            if (p) CAR.physics = { ...CAR.physics, ...p };
+        }
+        update();
+    } catch (e) {
+        console.error("Failed to load physics JSON files", e);
+    }
+}
+
+function initApp() {
+    initPhysics();
+    initMachineDropdown();
+    initTracks();
+    initTooltips();
+}
+
+initApp();

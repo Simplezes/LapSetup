@@ -1,6 +1,7 @@
 window.LMA_Physics = {
     simulate: (car, setup, env) => {
         const utils = window.LMA_Utils;
+        const formulas = window.LMA_Formulas;
         const phys = car.physics || {};
 
         const wheelbase = phys.wheelbase_m ?? 2.7;
@@ -15,41 +16,26 @@ window.LMA_Physics = {
         const tyreWindow = phys.tyreWindow || [80, 90];
 
         const getRangeDelta = (id) => {
-            const r = utils.getParamRange(car, id);
+            const r = window.LMA_Utils.getParamRange(car, id);
             return Math.abs(r.max - r.min) || 1;
         };
 
-        const getPhysVal = (id, sliderVal) => {
-            const config = utils.getItemConfig(car, id);
-            if (config && config.type === 'labeled') {
-                const opt = config.options[sliderVal];
-                return (typeof opt === 'object' && opt.value !== undefined) ? opt.value : sliderVal;
-            }
-            return sliderVal;
-        };
+        const getPhysVal = (id, sliderVal) => window.LMA_Formulas.getPhysVal(id, sliderVal, car);
 
-        const norm = (id, v, defaults) => {
-            const physV = getPhysVal(id, v);
-            let defaultVal = defaults[id];
-            if (defaultVal === undefined) {
-                const df = defaults[`${id}_f`] ?? 0;
-                const dr = defaults[`${id}_r`] ?? 0;
-                defaultVal = (df + dr) / 2;
-            }
-            return (physV - defaultVal) / getRangeDelta(id);
-        };
+        const getStandardizedDelta = (id, rawVal) => window.LMA_Formulas.getStandardizedDelta(car, env.defaults, id, rawVal);
+
+        const nWing = getStandardizedDelta('wing', setup.wing);
+        const nFARB = getStandardizedDelta('farb', setup.farb);
+        const nRARB = getStandardizedDelta('rarb', setup.rarb);
+        const nFS = getStandardizedDelta('fs', setup.fs);
+        const nRS = getStandardizedDelta('rs', setup.rs);
+        const nFH = getStandardizedDelta('fh', setup.fh);
+        const nRH = getStandardizedDelta('rh', setup.rh);
 
         const optPress = (phys.tyre_physics?.compound_medium?.optimal_pressure_kpa) || 190;
 
-        const nWing = norm('wing', setup.wing, env.defaults);
-        const nFARB = norm('farb', setup.farb, env.defaults);
-        const nRARB = norm('rarb', setup.rarb, env.defaults);
-        const nFS = norm('fs', setup.fs, env.defaults);
-        const nRS = norm('rs', setup.rs, env.defaults);
-        const nFH = norm('fh', setup.fh, env.defaults);
-        const nRH = norm('rh', setup.rh, env.defaults);
 
-        const fsbRange = utils.getParamRange(car, 'fsb');
+
         const fsrRange = utils.getParamRange(car, 'fsr');
         const ffbRange = utils.getParamRange(car, 'ffb');
         const ffrRange = utils.getParamRange(car, 'ffr');
