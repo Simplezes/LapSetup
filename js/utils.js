@@ -18,9 +18,10 @@ window.LMA_Utils = {
         }
 
         const unit = config.unit || '';
+        const unitNorm = unit.toLowerCase();
 
         if (id.includes('s') && !id.includes('sb') && !id.includes('sr')) {
-            if (unit === 'lbs/in') return val * window.LMA_Utils.UNITS.LBSIN_TO_NMM;
+            if (unitNorm === 'lbs/in' || unitNorm === 'lbf/in') return val * window.LMA_Utils.UNITS.LBSIN_TO_NMM;
             if (unit === 'N/mm') return val;
 
             const isLMP = car.id.includes('lmp');
@@ -98,8 +99,11 @@ window.LMA_Utils = {
                     decimals = stepStr.indexOf('.') > -1 ? stepStr.split('.')[1].length : 0;
                 }
                 const unit = config.unit || '';
-                if (unit === 'mm' || unit === 'cm') decimals = Math.min(decimals, 1);
+                if (config.unit === 'mm' || unit === 'cm') decimals = Math.min(decimals, 1);
                 else decimals = Math.min(decimals, 3);
+
+                if (id === 'wing') decimals = 2;
+
                 displayVal = displayVal.toFixed(decimals);
             }
 
