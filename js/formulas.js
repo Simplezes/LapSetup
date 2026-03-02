@@ -71,5 +71,50 @@ window.LMA_Formulas = {
             }
         }
         return sliderVal;
+    },
+
+    // Extracts physical properties from ARB strings like "25x2 3-3" or "D32x1_1-1"
+    parseARBLabel: (label) => {
+        if (!label || label === "Detached") return null;
+
+        // Pattern 1: Mustang style "25x2 3-3"
+        const mustangMatch = label.match(/(\d+)x([\d.]+)\s+(\d+)-(\d+)/);
+        if (mustangMatch) {
+            return {
+                diameter: parseFloat(mustangMatch[1]),
+                thickness: parseFloat(mustangMatch[2]),
+                setting: (parseFloat(mustangMatch[3]) + parseFloat(mustangMatch[4])) / 2
+            };
+        }
+
+        // Pattern 2: Lambo style "D32x1_1-1"
+        const lamboMatch = label.match(/D(\d+)x([\d.]+)_(\d+)-(\d+)/);
+        if (lamboMatch) {
+            return {
+                diameter: parseFloat(lamboMatch[1]),
+                thickness: parseFloat(lamboMatch[2]),
+                setting: (parseFloat(lamboMatch[3]) + parseFloat(lamboMatch[4])) / 2
+            };
+        }
+
+        // Pattern 3: Simple setting fallback "Setting 3"
+        const simpleMatch = label.match(/(\d+)/);
+        if (simpleMatch) {
+            return { diameter: 25, thickness: 2, setting: parseFloat(simpleMatch[1]) };
+        }
+
+        return null;
+    },
+    calculateARBStiffness: (label) => {
+        const phys = window.LMA_Formulas.parseARBLabel(label);
+        if (!phys) return 0;
+
+        const { diameter, thickness, setting } = phys;
+        const d_inner = diameter - (2 * thickness);
+
+        const J = Math.pow(diameter, 4) - Math.pow(d_inner, 4);
+        const L_factor = 1.5 - (setting - 1) * 0.25;
+
+        return J / L_factor;
     }
 };

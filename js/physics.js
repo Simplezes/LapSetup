@@ -25,8 +25,28 @@ window.LMA_Physics = {
         const getStandardizedDelta = (id, rawVal) => window.LMA_Formulas.getStandardizedDelta(car, env.defaults, id, rawVal);
 
         const nWing = getStandardizedDelta('wing', setup.wing);
-        const nFARB = getStandardizedDelta('farb', setup.farb);
-        const nRARB = getStandardizedDelta('rarb', setup.rarb);
+
+        // Handle ARB Stiffness
+        const getARBStiff = (id, val) => {
+            const config = utils.getItemConfig(car, id);
+            if (config && config.type === 'labeled') {
+                const opt = config.options[val];
+                const label = (typeof opt === 'object' ? opt.label : opt);
+                const currentK = formulas.calculateARBStiffness(label);
+
+                const defOpt = config.options[env.defaults[id]];
+                const defLabel = (typeof defOpt === 'object' ? defOpt.label : defOpt);
+                const defaultK = formulas.calculateARBStiffness(defLabel);
+
+                if (defaultK === 0) return 0;
+                return (currentK - defaultK) / defaultK;
+            }
+            return getStandardizedDelta(id, val);
+        };
+
+        const nFARB = getARBStiff('farb', setup.farb);
+        const nRARB = getARBStiff('rarb', setup.rarb);
+
         const nFS = getStandardizedDelta('fs', setup.fs);
         const nRS = getStandardizedDelta('rs', setup.rs);
         const nFH = getStandardizedDelta('fh', setup.fh);
