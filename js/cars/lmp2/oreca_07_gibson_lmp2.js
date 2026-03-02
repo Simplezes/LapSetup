@@ -1,7 +1,7 @@
 window.CARS = window.CARS || {};
 window.CARS["oreca_07_gibson_lmp2"] = {
     id: "oreca_07_gibson_lmp2",
-    name: "Oreca 07 LMP2",
+    name: "Oreca 07 Gibson LMP2",
     setupStructure: [
         {
             group: "Tires & Brakes",
