@@ -671,7 +671,10 @@ function update() {
                 if (config.unit && typeof displayVal === 'string' && !displayVal.includes(config.unit)) {
                     let unit = config.unit;
                     if (unit === 'deg') unit = '°';
-                    displayVal = parseFloat(displayVal).toFixed(2) + unit;
+                    let degDecimals = 2;
+                    if (readoutId === 'wing') degDecimals = 1;
+                    else if (readoutId === 'ftoe' || readoutId === 'rtoe') degDecimals = 3;
+                    displayVal = parseFloat(displayVal).toFixed(degDecimals) + unit;
                 }
 
                 if (config.prefix && typeof displayVal === 'string' && !displayVal.startsWith(config.prefix)) {
@@ -691,7 +694,7 @@ function update() {
     setLabel('tp_r', vals.tpressure_r, 'tpressure_r');
     setLabel('fc', vals.fcam, 'fcam');
     setLabel('rc', vals.rcam, 'rcam');
-    els.bV.innerText = `${vals.bias.toFixed(1)}:${(100 - vals.bias).toFixed(1)}%`;
+    els.bV.innerText = `${(100 - vals.bias).toFixed(1)}:${vals.bias.toFixed(1)}%`;
 
     const getDuctLabels = (id) => {
         const config = getItemConfig(id);
@@ -771,7 +774,7 @@ function update() {
         - nWingDelta * (biasSpan * 0.08);
     targetB = Math.round(targetB * 10) / 10;
     targetB = Math.min(bRange.max, Math.max(bRange.min, targetB));
-    els.recoBias.innerText = `${targetB.toFixed(1)}:${(100 - targetB).toFixed(1)}`;
+    els.recoBias.innerText = `${(100 - targetB).toFixed(1)}:${targetB.toFixed(1)}`;
 
     if (window.GLOBAL_TRACKS && SELECTED_TRACK_ID) {
         let track = getTrackData(SELECTED_TRACK_ID);
@@ -853,7 +856,6 @@ function update() {
     const nRToe = norm('rtoe', vals.rtoe);
     const nFCam = norm('fcam', vals.fcam);
     const nRCam = norm('rcam', vals.rcam);
-    const nBias = norm('bias', vals.bias);
     const nPressF = (vals.tpressure_f - optPress) / (getRangeDelta('tpressure_f') || 1);
     const nPressR = (vals.tpressure_r - optPress) / (getRangeDelta('tpressure_r') || 1);
     const nFBD = norm('fbd', vals.fbd);
@@ -1111,10 +1113,6 @@ function update() {
             const technicalityMod = (c.technicality - 5) / 5;
             const speedMod = (c.speed - 5) / 5;
             const bumpMod = ((c.bumps || 5) - 5) / 5;
-
-            // adjust how much the track characteristics influence the ghost curve
-            // based on the selected car's category. slower/less-aero cars get a
-            // reduced effect so their suggested "ideal" setup stays realistic.
             const trackScale = getCarGhostScale();
 
             const tDf = clamp(carBaseDf + ((technicalityMod * 25) - (speedMod * 15)) * trackScale);
