@@ -6,6 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LeManStudio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#09090b',
+                        panel: 'rgba(24, 24, 27, 0.4)',
+                        'panel-alt': 'rgba(39, 39, 42, 0.4)',
+                        border: '#27272a',
+                        accent: '#3b82f6',
+                        zinc: {
+                            950: '#09090b',
+                            900: '#18181b',
+                            800: '#27272a',
+                            700: '#3f3f46',
+                            600: '#52525b',
+                            500: '#71717a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -22,7 +45,7 @@
 
         <header class="flex justify-between items-center mb-4 pb-4 border-b border-white/5 flex-none z-[1000]">
             <div class="flex items-center gap-4 min-w-0">
-                <img src="img/logo.png" alt="LeManStudio" class="h-6 w-auto object-contain flex-shrink-0">
+                <img src="img/icon.png" alt="LeManStudio" class="h-6 w-auto object-contain flex-shrink-0">
                 <div class="flex flex-col gap-0.5 min-w-0 hidden md:flex">
                     <p class="text-[8px] text-amber-500/60 font-bold uppercase tracking-widest leading-tight">
                         ⚠ Simulation values are approximate — results may not reflect 100% in LMU behaviour.
@@ -55,7 +78,6 @@
 
                 <div class="smart-section group relative collapsed">
                     <div class="sidebar-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="accent-bar !bg-white"></div>
                         <span>MACHINE</span>
                         <svg class="chevron-icon" width="10" height="10" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="3">
@@ -92,9 +114,45 @@
                     </div>
                 </div>
 
+                <div class="smart-section group relative collapsed">
+                    <div class="sidebar-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <span>CIRCUIT</span>
+                        <svg class="chevron-icon" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="3">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </div>
+                    <div class="section-content p-2">
+                        <button id="openTrackBtn" class="track-card-compact w-full group">
+                            <div class="track-card-accent-line"></div>
+                            <div class="flex flex-col relative z-10">
+                                <span id="currentTrack"
+                                    class="font-bold tracking-widest text-[11px] text-blue-500 uppercase italic text-left">CIRCUIT
+                                    DE LA SARTHE</span>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span
+                                        class="text-[8px] text-slate-500 font-bold uppercase tracking-tighter opacity-70">LOCATION</span>
+                                    <span
+                                        class="location-subtext text-[9px] text-slate-400 font-mono uppercase">FRANCE</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="absolute right-3 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-100 group-hover:text-blue-500 transition-all duration-300">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div id="trackDropdown" class="dropdown-menu custom-scrollbar">
+                    </div>
+                </div>
+
                 <div class="smart-section group collapsed">
                     <div class="sidebar-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="accent-bar !bg-amber-500"></div>
                         <span>AMBIENT</span>
                         <svg class="chevron-icon" width="10" height="10" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="3">
@@ -146,47 +204,8 @@
                     </div>
                 </div>
 
-                <div class="smart-section group relative collapsed">
-                    <div class="sidebar-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="accent-bar !bg-blue-500"></div>
-                        <span>CIRCUIT</span>
-                        <svg class="chevron-icon" width="10" height="10" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="3">
-                            <path d="m6 9 6 6 6-6" />
-                        </svg>
-                    </div>
-                    <div class="section-content p-2">
-                        <button id="openTrackBtn" class="track-card-compact w-full group">
-                            <div class="track-card-accent-line"></div>
-                            <div class="flex flex-col relative z-10">
-                                <span id="currentTrack"
-                                    class="font-bold tracking-widest text-[11px] text-blue-500 uppercase italic text-left">CIRCUIT
-                                    DE LA SARTHE</span>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span
-                                        class="text-[8px] text-slate-500 font-bold uppercase tracking-tighter opacity-70">LOCATION</span>
-                                    <span
-                                        class="location-subtext text-[9px] text-slate-400 font-mono uppercase">FRANCE</span>
-                                </div>
-                            </div>
-
-                            <div
-                                class="absolute right-3 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-100 group-hover:text-blue-500 transition-all duration-300">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path d="m6 9 6 6 6-6" />
-                                </svg>
-                            </div>
-                        </button>
-                    </div>
-
-                    <div id="trackDropdown" class="dropdown-menu custom-scrollbar">
-                    </div>
-                </div>
-
                 <div class="smart-section group collapsed">
                     <div class="sidebar-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="accent-bar !bg-green-500"></div>
                         <span>PRESETS</span>
                         <svg class="chevron-icon" width="10" height="10" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="3">
@@ -225,7 +244,6 @@
 
                 <div class="smart-section group collapsed">
                     <div class="sidebar-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                        <div class="accent-bar !bg-blue-500"></div>
                         <span>FUEL CALCULATOR</span>
                         <svg class="chevron-icon" width="10" height="10" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="3">
@@ -415,6 +433,8 @@
                                 stroke="rgba(255,255,255,0.03)" stroke-width="0.5" />
                             <polygon points="100,60 138.04,87.64 123.51,132.36 76.49,132.36 61.96,87.64" fill="none"
                                 stroke="rgba(255,255,255,0.03)" stroke-width="0.5" />
+
+
                             <line x1="100" y1="100" x2="100" y2="20" stroke="rgba(255,255,255,0.05)"
                                 stroke-width="0.5" />
                             <line x1="100" y1="100" x2="176.08" y2="75.28" stroke="rgba(255,255,255,0.05)"
@@ -510,7 +530,8 @@
                                     class="text-[9px] text-slate-500 font-bold uppercase tracking-widest cursor-help hover:text-white transition-colors"
                                     title="Theoretical maximum velocity on long straights.">Top
                                     Speed</span><span id="barValTs"
-                                    class="text-[10px] text-blue-500 font-mono">0%</span></div>
+                                    class="text-[10px] text-blue-500 font-mono">0%</span>
+                            </div>
                             <div class="h-1 w-full bg-slate-900 rounded-none overflow-hidden relative">
                                 <div id="barActiveTs"
                                     class="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-300"

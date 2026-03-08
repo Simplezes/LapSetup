@@ -1,23 +1,26 @@
 /* ─── Design Tokens ──────────────────────────────────────────────────────────── */
 :root {
-    --blue: #0ea5e9;
-    /* Sharp Cyan Accent */
-    --blue-dim: #0284c7;
-    --blue-glow: rgba(14, 165, 233, 0.1);
+    --blue: #3b82f6;
+    /* Clinical Blue Accent */
+    --blue-dim: #2563eb;
+    --blue-glow: rgba(59, 130, 246, 0.1);
     --green: #10b981;
     --red: #ef4444;
     --orange: #f59e0b;
-    --bg: #020617;
-    /* Solid Deep Slate/Black */
-    --panel: #0f172a;
-    /* Solid Slate Panel */
-    --panel-alt: #1e293b;
-    --border: rgba(255, 255, 255, 0.04);
-    --border-bright: rgba(255, 255, 255, 0.08);
-    --text-dim: #64748b;
-    --text-muted: #94a3b8;
+    --bg: #09090b;
+    /* Pure Deep Zinc */
+    --panel: rgba(24, 24, 27, 0.4);
+    /* Translucent Zinc Panel */
+    --panel-alt: rgba(39, 39, 42, 0.4);
+    --border: #27272a;
+    /* Zinc-800 Border */
+    --border-bright: #3f3f46;
+    /* Zinc-700 Border */
+    --text-dim: #71717a;
+    /* Zinc-500 Text */
+    --text-muted: #52525b;
+    /* Zinc-600 Muted */
     --radius-lg: 4px;
-    /* Sharper edges */
     --radius-sm: 2px;
 }
 
@@ -286,15 +289,12 @@ body::before {
 
 /* ─── Glass Panels ───────────────────────────────────────────────────────────── */
 .glass {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+    background: var(--panel);
     border: 1px solid var(--border);
-    border-left: 4px solid var(--blue);
     border-radius: var(--radius-lg);
-    box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     position: relative;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -332,12 +332,12 @@ body::before {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--blue-dim);
-    border-radius: 2px;
+    background: var(--border-bright);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--blue);
+    background: var(--text-dim);
 }
 
 /* ─── Range Sliders ──────────────────────────────────────────────────────────── */
