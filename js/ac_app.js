@@ -185,6 +185,119 @@ window.AC_App = (function () {
         return avg + 1.5;
     }
 
+
+
+    // GRIP: mechanical traction — camber, pressure deviation, spring compliance
+    function calcACGrip() {
+        if (!car) return 50;
+        const pressAvg = ((values.PRESSURE_LF || 19) + (values.PRESSURE_RF || 19) +
+                          (values.PRESSURE_LR || 19) + (values.PRESSURE_RR || 19)) / 4;
+        const camF    = (Math.abs(values.CAMBER_LF || 0) + Math.abs(values.CAMBER_RF || 0)) / 2;
+        const camR    = (Math.abs(values.CAMBER_LR || 0) + Math.abs(values.CAMBER_RR || 0)) / 2;
+        const springF = ((values.SPRING_RATE_LF || 42) + (values.SPRING_RATE_RF || 42)) / 2;
+        return Math.round(Math.max(0, Math.min(100,
+            50
+            - Math.abs(pressAvg - 19.5) * 5   // 19-20 PSI optimal, penalty per PSI deviation
+            + (camF - 35) * 2.0               // max camber -38 = +6; less = penalty
+            + (camR - 16) * 1.5              // ideal rear camber 19-22; below 16 = 0 bonus
+            - Math.max(0, camR - 22) * 2.0   // penalty for over-aggressive rear camber
+            - (springF - 42) * 0.5           // stiffer front = slightly less mechanical grip
+        )));
+    }
+
+    // TURN-IN: initial steering response — rebound, front spring, nose height, rear toe
+    function calcACTurnIn() {
+        if (!car) return 50;
+        const springF = ((values.SPRING_RATE_LF || 42) + (values.SPRING_RATE_RF || 42)) / 2;
+        const rebF    = ((values.DAMP_REBOUND_LF || 5) + (values.DAMP_REBOUND_RF || 5)) / 2;
+        const camF    = (Math.abs(values.CAMBER_LF || 0) + Math.abs(values.CAMBER_RF || 0)) / 2;
+        const rodF    = ((values.ROD_LENGTH_LF || 0) + (values.ROD_LENGTH_RF || 0)) / 2;
+        const toeR    = ((values.TOE_OUT_LR || 31) + (values.TOE_OUT_RR || 31)) / 2;
+        const arbR    = values.ARB_REAR !== undefined ? values.ARB_REAR : 1;
+        return Math.round(Math.max(0, Math.min(100,
+            50
+            + (springF - 44) * 1.5    // stiffer front spring = sharper weight transfer
+            + (9 - rebF) * 3.0        // lower front rebound = faster nose drop at entry
+            + (camF - 35) * 1.5       // more camber = more lateral grip at turn-in
+            + rodF * 2.5              // higher rod = lower nose = more front load
+            + (1 - arbR) * 5          // ARB rear off = rear pivots more freely
+            + (32 - toeR) * 2.0       // lower rear toe = less passive understeer
+        )));
+    }
+
+    // BUMPS: suspension compliance — spring softness, bump damper stiffness
+    function calcACBumps() {
+        if (!car) return 50;
+        const springF = ((values.SPRING_RATE_LF || 42) + (values.SPRING_RATE_RF || 42)) / 2;
+        const springR = ((values.SPRING_RATE_LR || 62) + (values.SPRING_RATE_RR || 62)) / 2;
+        const bumpF   = ((values.DAMP_BUMP_LF || 6) + (values.DAMP_BUMP_RF || 6)) / 2;
+        const bumpR   = ((values.DAMP_BUMP_LR || 6) + (values.DAMP_BUMP_RR || 6)) / 2;
+        // Normalise: softest possible = 1.0, stiffest = 0.0
+        const nSpF = Math.max(0, 1 - (springF - 37) / 21);  // range 37-58
+        const nSpR = Math.max(0, 1 - (springR - 62) / 45);  // range 62-107
+        const nBuF = Math.max(0, 1 - bumpF / 11);
+        const nBuR = Math.max(0, 1 - bumpR / 11);
+        return Math.round(Math.max(0, Math.min(100,
+            nSpF * 35 + nSpR * 20 + nBuF * 30 + nBuR * 15
+        )));
+    }
+
+    // ── Chart UI ──────────────────────────────────────────────────────────────
+    function acPt(angle, val) {
+        const r   = (Math.max(0, Math.min(100, val)) / 100) * 80;
+        const rad = (angle - 90) * Math.PI / 180;
+        return (100 + r * Math.cos(rad)).toFixed(1) + ',' + (100 + r * Math.sin(rad)).toFixed(1);
+    }
+
+    function updateACChartUI() {
+        const grip    = calcACGrip();
+        const turnIn  = calcACTurnIn();
+        const bumps   = calcACBumps();
+
+        // Radar
+        const poly = el('ac-spiderPoly');
+        if (poly) poly.setAttribute('points', acPt(0, grip) + ' ' + acPt(120, turnIn) + ' ' + acPt(240, bumps));
+
+        // Bars
+        const setBar = (id, val) => {
+            const bar = el('ac-barActive' + id);
+            const lbl = el('ac-barVal' + id);
+            if (bar) bar.style.width = val + '%';
+            if (lbl) lbl.innerText = val + '%';
+        };
+        setBar('Gr', grip);
+        setBar('Tu', turnIn);
+        setBar('Bu', bumps);
+    }
+
+    // ── Chart view toggle (RADAR / BARS) ──────────────────────────────────────
+    function initACChart() {
+        const btnRadar   = el('ac-viewRadar');
+        const btnBars    = el('ac-viewBars');
+        const radarView  = el('ac-radarView');
+        const barsView   = el('ac-barsView');
+        if (!btnRadar || !btnBars) return;
+
+        function switchACView(v) {
+            const isRadar = v === 'radar';
+            radarView.classList.toggle('hidden', !isRadar);
+            radarView.classList.toggle('flex', isRadar);
+            barsView.classList.toggle('hidden', isRadar);
+            barsView.classList.toggle('flex', !isRadar);
+
+            btnRadar.className = isRadar
+                ? 'text-[9px] font-bold px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors'
+                : 'text-[9px] font-bold text-slate-500 px-2.5 py-1 rounded border border-white/5 hover:text-white hover:bg-white/5 transition-colors';
+            btnBars.className = !isRadar
+                ? 'text-[9px] font-bold px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors'
+                : 'text-[9px] font-bold text-slate-500 px-2.5 py-1 rounded border border-white/5 hover:text-white hover:bg-white/5 transition-colors';
+        }
+
+        btnRadar.onclick = () => switchACView('radar');
+        btnBars.onclick  = () => switchACView('bars');
+        switchACView('radar');
+    }
+
     // Per-parameter physics feedback — direct statements, no hedging (Section 2)
     function getParamFeedback(key) {
         var v = parseFloat(values[key] || 0);
@@ -491,6 +604,7 @@ window.AC_App = (function () {
         updateHotPressureUI();
         updateWarningsUI();
         updatePressureHintUI();
+        updateACChartUI();
     }
 
     // ── Session toggle Q / R ──────────────────────────────────────────────────
@@ -795,6 +909,7 @@ window.AC_App = (function () {
         initSession();
         initTempSelector();
         initACTrackDropdown();
+        initACChart();
 
         const exportBtn = el('ac-export-btn');
         if (exportBtn) exportBtn.onclick = exportINI;

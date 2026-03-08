@@ -285,49 +285,68 @@
                         <div class="space-y-3">
                             <div id="fuelTimeInputs" class="space-y-2 transition-all">
                                 <div class="flex gap-2">
-                                    <div class="flex-1">
+                                    <div class="flex-1 min-w-0">
                                         <label
                                             class="text-[8px] text-slate-500 uppercase font-bold block mb-1">Hours</label>
-                                        <input type="number" id="fuelHours" value="1" min="0"
-                                            class="w-full bg-slate-950 border border-white/5 rounded-sm px-2 py-1 text-[10px] focus:border-blue-500/50 transition-colors">
+                                        <div class="num-spinner w-full">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelHours" data-action="dec">−</button>
+                                            <input type="number" id="fuelHours" value="1" min="0" class="text-[10px]">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelHours" data-action="inc">+</button>
+                                        </div>
                                     </div>
-                                    <div class="flex-1">
+                                    <div class="flex-1 min-w-0">
                                         <label
                                             class="text-[8px] text-slate-500 uppercase font-bold block mb-1">Minutes</label>
-                                        <input type="number" id="fuelMinutes" value="0" min="0" max="59"
-                                            class="w-full bg-slate-950 border border-white/5 rounded-sm px-2 py-1 text-[10px] focus:border-blue-500/50 transition-colors">
+                                        <div class="num-spinner w-full">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelMinutes" data-action="dec">−</button>
+                                            <input type="number" id="fuelMinutes" value="0" min="0" max="59" class="text-[10px]">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelMinutes" data-action="inc">+</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div id="fuelLapsInput" class="hidden transition-all">
                                 <label class="text-[8px] text-slate-500 uppercase font-bold block mb-1">Total
                                     Laps</label>
-                                <input type="number" id="fuelTotalLaps" value="50" min="1"
-                                    class="w-full bg-slate-950 border border-white/5 rounded-sm px-2 py-1 text-[10px] focus:border-blue-500/50 transition-colors">
+                                <div class="num-spinner w-full">
+                                    <button type="button" class="num-spinner-btn" data-target="fuelTotalLaps" data-action="dec">−</button>
+                                    <input type="number" id="fuelTotalLaps" value="50" min="1" class="text-[10px]">
+                                    <button type="button" class="num-spinner-btn" data-target="fuelTotalLaps" data-action="inc">+</button>
+                                </div>
                             </div>
 
                             <div class="space-y-3">
                                 <div id="fuelLapTimeLabel">
                                     <label class="text-[8px] text-slate-500 uppercase font-bold block mb-1">Lap Time
                                         (M:S.ms)</label>
-                                    <div class="flex gap-1 items-center">
-                                        <input type="number" id="fuelLapMin" value="2" min="0" placeholder="M"
-                                            class="w-12 bg-slate-950 border border-white/5 rounded-sm px-1 py-1 text-[10px] focus:border-blue-500/50 transition-colors text-center font-mono">
-                                        <span class="text-slate-600 font-bold">:</span>
-                                        <input type="number" id="fuelLapSec" value="00" min="0" max="59"
-                                            placeholder="SS"
-                                            class="w-12 bg-slate-950 border border-white/5 rounded-sm px-1 py-1 text-[10px] focus:border-blue-500/50 transition-colors text-center font-mono">
-                                        <span class="text-slate-600 font-bold">.</span>
-                                        <input type="number" id="fuelLapMs" value="000" min="0" max="999"
-                                            placeholder="ms"
-                                            class="w-16 bg-slate-950 border border-white/5 rounded-sm px-1 py-1 text-[10px] focus:border-blue-500/50 transition-colors text-center font-mono">
+                                    <div class="flex gap-1 items-center min-w-0">
+                                        <div class="num-spinner flex-1 min-w-0">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelLapMin" data-action="dec">−</button>
+                                            <input type="number" id="fuelLapMin" value="2" min="0" placeholder="M" class="text-[10px] font-mono text-center">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelLapMin" data-action="inc">+</button>
+                                        </div>
+                                        <span class="text-slate-600 font-bold flex-shrink-0">:</span>
+                                        <div class="num-spinner flex-1 min-w-0">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelLapSec" data-action="dec">−</button>
+                                            <input type="number" id="fuelLapSec" value="00" min="0" max="59" placeholder="SS" class="text-[10px] font-mono text-center">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelLapSec" data-action="inc">+</button>
+                                        </div>
+                                        <span class="text-slate-600 font-bold flex-shrink-0">.</span>
+                                        <div class="num-spinner flex-[1.5] min-w-0">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelLapMs" data-action="dec">−</button>
+                                            <input type="number" id="fuelLapMs" value="000" min="0" max="999" placeholder="ms" class="text-[10px] font-mono text-center">
+                                            <button type="button" class="num-spinner-btn" data-target="fuelLapMs" data-action="inc">+</button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="w-full">
                                     <label class="text-[8px] text-slate-500 uppercase font-bold block mb-1">Fuel /
                                         Lap</label>
-                                    <input type="number" id="fuelPerLapInput" value="3.5" min="0.1" step="0.1"
-                                        class="w-full bg-slate-950 border border-white/5 rounded-sm px-2 py-1 text-[10px] focus:border-blue-500/50 transition-colors">
+                                    <div class="num-spinner w-full">
+                                        <button type="button" class="num-spinner-btn" data-target="fuelPerLapInput" data-action="dec">−</button>
+                                        <input type="number" id="fuelPerLapInput" value="3.5" min="0.1" step="0.1" class="text-[10px]">
+                                        <button type="button" class="num-spinner-btn" data-target="fuelPerLapInput" data-action="inc">+</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1113,11 +1132,11 @@
                                 </div>
                             </div>
                             <div class="space-y-1">
-                                <div class="flex justify-between items-end">
-                                    <span class="text-[8px] font-bold text-slate-600 uppercase tracking-widest">TC</span>
-                                    <span id="ac_TRACTION_CONTROL_V" class="text-[9px] text-blue-500 font-mono">0</span>
+                                <span class="text-[8px] font-bold text-slate-600 uppercase tracking-widest block mb-1">TC</span>
+                                <div class="flex gap-1">
+                                    <button id="ac_TC_0" class="flex-1 px-2 py-1.5 text-[9px] font-bold border border-blue-500/30 bg-blue-500/10 text-blue-400 transition-all rounded-sm">OFF</button>
+                                    <button id="ac_TC_1" class="flex-1 px-2 py-1.5 text-[9px] font-bold border border-white/5 text-slate-500 hover:bg-white/5 transition-all rounded-sm">ON</button>
                                 </div>
-                                <input type="range" id="ac_TRACTION_CONTROL" min="0" max="4" step="1" value="0" class="w-full h-1 bg-slate-900 rounded-none appearance-none cursor-pointer">
                             </div>
                         </div>
                         <div class="space-y-1">
@@ -1217,6 +1236,89 @@
                 </div>
 
                 <!-- ── Setup Analysis (Stability Score + Warnings) ── -->
+                <!-- ── AC Radar / Bars chart (Bumps · Turn-in · Grip) ── -->
+                <div class="p-3 border border-white/5 bg-panel relative" style="min-height:220px">
+                    <!-- Toggle buttons -->
+                    <div class="absolute top-3 left-3 flex gap-1.5 z-10">
+                        <button id="ac-viewRadar"
+                            class="text-[9px] font-bold px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors">RADAR</button>
+                        <button id="ac-viewBars"
+                            class="text-[9px] font-bold text-slate-500 px-2.5 py-1 rounded border border-white/5 hover:text-white hover:bg-white/5 transition-colors">BARS</button>
+                    </div>
+
+                    <!-- Radar (triangle) -->
+                    <div id="ac-radarView" class="flex items-center justify-center pt-2 pb-1">
+                        <svg viewBox="0 0 200 200" class="w-44 h-44 overflow-visible">
+                            <!-- outer grid triangle -->
+                            <polygon points="100,20 169.3,140 30.7,140" fill="none"
+                                stroke="rgba(255,255,255,0.04)" stroke-width="0.8"/>
+                            <!-- 50% ring -->
+                            <polygon points="100,60 134.6,120 65.4,120" fill="none"
+                                stroke="rgba(255,255,255,0.04)" stroke-width="0.8"/>
+                            <!-- axis lines -->
+                            <line x1="100" y1="100" x2="100" y2="20"
+                                stroke="rgba(255,255,255,0.06)" stroke-width="0.6"/>
+                            <line x1="100" y1="100" x2="169.3" y2="140"
+                                stroke="rgba(255,255,255,0.06)" stroke-width="0.6"/>
+                            <line x1="100" y1="100" x2="30.7" y2="140"
+                                stroke="rgba(255,255,255,0.06)" stroke-width="0.6"/>
+                            <!-- data polygon -->
+                            <polygon id="ac-spiderPoly" points="100,60 134.6,120 65.4,120"
+                                fill="rgba(14,165,233,0.10)" stroke="#0ea5e9" stroke-width="1.5"/>
+                            <!-- labels -->
+                            <text x="100" y="11" text-anchor="middle"
+                                class="fill-slate-500 font-bold uppercase tracking-widest"
+                                font-size="8"
+                                data-tooltip="Total mechanical traction — camber, pressure and spring compliance">Grip</text>
+                            <text x="177" y="147" text-anchor="start"
+                                class="fill-slate-500 font-bold uppercase tracking-widest"
+                                font-size="8"
+                                data-tooltip="Initial steering response when entering a corner — rebound, spring stiffness and rod length">Turn-in</text>
+                            <text x="23" y="147" text-anchor="end"
+                                class="fill-slate-500 font-bold uppercase tracking-widest"
+                                font-size="8"
+                                data-tooltip="Suspension compliance on rough surfaces — spring softness and bump damper setting">Bumps</text>
+                        </svg>
+                    </div>
+
+                    <!-- Bars view (hidden by default) -->
+                    <div id="ac-barsView" class="hidden flex-col justify-center px-4 pb-2 gap-3 pt-8">
+                        <!-- Grip -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-end">
+                                <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest cursor-help hover:text-white transition-colors"
+                                    data-tooltip="Total mechanical traction — camber, pressure and spring compliance">Grip</span>
+                                <span id="ac-barValGr" class="text-[10px] text-blue-500 font-mono">0%</span>
+                            </div>
+                            <div class="h-1 w-full bg-slate-900 rounded-none overflow-hidden relative">
+                                <div id="ac-barActiveGr" class="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-300" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <!-- Turn-in -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-end">
+                                <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest cursor-help hover:text-white transition-colors"
+                                    data-tooltip="Initial steering response when entering a corner — rebound, spring stiffness and rod length">Turn-in</span>
+                                <span id="ac-barValTu" class="text-[10px] text-blue-500 font-mono">0%</span>
+                            </div>
+                            <div class="h-1 w-full bg-slate-900 rounded-none overflow-hidden relative">
+                                <div id="ac-barActiveTu" class="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-300" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <!-- Bumps -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-end">
+                                <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest cursor-help hover:text-white transition-colors"
+                                    data-tooltip="Suspension compliance on rough surfaces — spring softness and bump damper setting">Bumps</span>
+                                <span id="ac-barValBu" class="text-[10px] text-blue-500 font-mono">0%</span>
+                            </div>
+                            <div class="h-1 w-full bg-slate-900 rounded-none overflow-hidden relative">
+                                <div id="ac-barActiveBu" class="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-300" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="ac-status" class="p-3 border border-white/5 bg-panel space-y-3">
                     <h3 class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Setup Analysis</h3>
                     <!-- Stability score (Sec. 7): toe_R + spring_ratio + ARB_R + camber_R + rebound_Δ — 20 pts each -->
@@ -1336,6 +1438,10 @@
     <script src="js/setup_service.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/physics.js"></script>
+    <script src="js/app_core.js"></script>
+    <script src="js/app_ui.js"></script>
+    <script src="js/app_update.js"></script>
+    <script src="js/app_tooltips.js"></script>
     <script src="js/app.js"></script>
     <script src="js/ac_app.js"></script>
 </body>

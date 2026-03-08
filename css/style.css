@@ -1308,6 +1308,73 @@ body.mode-basic .setting-advanced {
     border: 1px solid transparent;
 }
 
+/* ─── Custom Number Spinner ──────────────────────────────────────────────────── */
+.num-spinner {
+    display: flex;
+    align-items: stretch;
+    background: #020617;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.num-spinner:focus-within {
+    border-color: rgba(14, 165, 233, 0.5);
+}
+
+.num-spinner input[type="number"] {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 4px 2px;
+    font-size: 10px;
+    color: #f8fafc;
+    text-align: center;
+    font-family: inherit;
+    min-width: 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.num-spinner input[type="number"]::-webkit-inner-spin-button,
+.num-spinner input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+.num-spinner-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.03);
+    border: none;
+    border-radius: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.num-spinner-btn:hover {
+    background: rgba(14, 165, 233, 0.15);
+    color: #0ea5e9;
+}
+
+.num-spinner-btn:active {
+    background: rgba(14, 165, 233, 0.3);
+    color: #38bdf8;
+}
+
 .dropdown-item.nested {
     padding-left: 20px;
     /*background: rgba(255, 255, 255, 0.01);*/

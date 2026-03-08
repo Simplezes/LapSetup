@@ -11,7 +11,7 @@ window.AC_CARS['mx5_cup'] = {
     params: {
         FUEL:             { label: 'Fuel',         min: 0,   max: 60,  step: 1, default: 20,  unit: ' L' },
         ABS:              { label: 'ABS',           min: 0,   max: 1,   step: 1, default: 1,   unit: '', isToggle: true },
-        TRACTION_CONTROL: { label: 'TC',            min: 0,   max: 4,   step: 1, default: 0,   unit: '' },
+        TRACTION_CONTROL: { label: 'TC',            min: 0,   max: 1,   step: 1, default: 0,   unit: '', isToggle: true },
         BRAKE_POWER_MULT: { label: 'Brake Power',   min: 80,  max: 100, step: 1, default: 100, unit: '%' },
         TYRES:            { label: 'Compound',      min: 0,   max: 0,   step: 1, default: 0,   unit: '', isReadOnly: true },
 
@@ -21,39 +21,39 @@ window.AC_CARS['mx5_cup'] = {
         PRESSURE_RR: { label: 'RR', min: 15, max: 35, step: 1, default: 19, unit: ' PSI' },
 
         // Stored as integer * 10 of degrees (e.g. -38 = -3.8°)
-        CAMBER_LF: { label: 'FL', min: -64, max: 0, step: 2, default: -38, unit: '°', displayScale: 0.1, decimals: 1 },
-        CAMBER_RF: { label: 'FR', min: -64, max: 0, step: 2, default: -36, unit: '°', displayScale: 0.1, decimals: 1 },
-        CAMBER_LR: { label: 'RL', min: -32, max: 0, step: 2, default: -20, unit: '°', displayScale: 0.1, decimals: 1 },
-        CAMBER_RR: { label: 'RR', min: -32, max: 0, step: 2, default: -20, unit: '°', displayScale: 0.1, decimals: 1 },
+        CAMBER_LF: { label: 'FL', min: -38, max: 8, step: 2, default: -38, unit: '°', displayScale: 0.1, decimals: 1 },
+        CAMBER_RF: { label: 'FR', min: -38, max: 8, step: 2, default: -36, unit: '°', displayScale: 0.1, decimals: 1 },
+        CAMBER_LR: { label: 'RL', min: -22, max: 15, step: 1, default: -20, unit: '°', displayScale: 0.1, decimals: 1 },
+        CAMBER_RR: { label: 'RR', min: -22, max: 15, step: 1, default: -20, unit: '°', displayScale: 0.1, decimals: 1 },
 
         // Stored as integer * 100 of degrees (e.g. 12 = 0.12°)
-        TOE_OUT_LF: { label: 'FL', min: -50, max: 50, step: 1, default:  12, unit: '°', displayScale: 0.01, decimals: 2 },
-        TOE_OUT_RF: { label: 'FR', min: -50, max: 50, step: 1, default:  12, unit: '°', displayScale: 0.01, decimals: 2 },
-        TOE_OUT_LR: { label: 'RL', min: 0,   max: 60, step: 1, default:  31, unit: '°', displayScale: 0.01, decimals: 2 },
-        TOE_OUT_RR: { label: 'RR', min: 0,   max: 60, step: 1, default:  32, unit: '°', displayScale: 0.01, decimals: 2 },
+        TOE_OUT_LF: { label: 'FL', min: 0, max: 12, step: 1, default:  12, unit: '°', displayScale: 0.01, decimals: 2 },
+        TOE_OUT_RF: { label: 'FR', min: 0, max: 12, step: 1, default:  12, unit: '°', displayScale: 0.01, decimals: 2 },
+        TOE_OUT_LR: { label: 'RL', min: 0,   max: 34, step: 1, default:  31, unit: '°', displayScale: 0.01, decimals: 2 },
+        TOE_OUT_RR: { label: 'RR', min: 0,   max: 34, step: 1, default:  32, unit: '°', displayScale: 0.01, decimals: 2 },
 
-        ARB_FRONT: { label: 'Front ARB', min: 0, max: 5, step: 1, default: 2, unit: '' },
+        ARB_FRONT: { label: 'Front ARB', min: 0, max: 4, step: 1, default: 2, unit: '' },
         ARB_REAR:  { label: 'Rear ARB',  min: 0, max: 5, step: 1, default: 1, unit: '' },
 
-        SPRING_RATE_LF: { label: 'FL', min: 24,  max: 100, step: 2, default: 42, unit: ' N/mm' },
-        SPRING_RATE_RF: { label: 'FR', min: 24,  max: 100, step: 2, default: 42, unit: ' N/mm' },
-        SPRING_RATE_LR: { label: 'RL', min: 36,  max: 140, step: 2, default: 62, unit: ' N/mm' },
-        SPRING_RATE_RR: { label: 'RR', min: 36,  max: 140, step: 2, default: 62, unit: ' N/mm' },
+        SPRING_RATE_LF: { label: 'FL', min: 37,  max: 58,  step: 1, default: 42, unit: ' N/mm' },
+        SPRING_RATE_RF: { label: 'FR', min: 37,  max: 58,  step: 1, default: 42, unit: ' N/mm' },
+        SPRING_RATE_LR: { label: 'RL', min: 62,  max: 107, step: 1, default: 62, unit: ' N/mm' },
+        SPRING_RATE_RR: { label: 'RR', min: 62,  max: 107, step: 1, default: 62, unit: ' N/mm' },
 
-        ROD_LENGTH_LF: { label: 'FL', min: -5, max: 10, step: 1, default:  2, unit: '' },
-        ROD_LENGTH_RF: { label: 'FR', min: -5, max: 10, step: 1, default:  2, unit: '' },
-        ROD_LENGTH_LR: { label: 'RL', min: -5, max: 10, step: 1, default:  0, unit: '' },
-        ROD_LENGTH_RR: { label: 'RR', min: -5, max: 10, step: 1, default:  0, unit: '' },
+        ROD_LENGTH_LF: { label: 'FL', min: 0, max: 25, step: 1, default:  2, unit: '' },
+        ROD_LENGTH_RF: { label: 'FR', min: 0, max: 25, step: 1, default:  2, unit: '' },
+        ROD_LENGTH_LR: { label: 'RL', min: 0, max: 30, step: 1, default:  0, unit: '' },
+        ROD_LENGTH_RR: { label: 'RR', min: 0, max: 30, step: 1, default:  0, unit: '' },
 
-        DAMP_BUMP_LF:    { label: 'FL', min: 1, max: 14, step: 1, default: 6, unit: '' },
-        DAMP_BUMP_RF:    { label: 'FR', min: 1, max: 14, step: 1, default: 6, unit: '' },
-        DAMP_BUMP_LR:    { label: 'RL', min: 1, max: 14, step: 1, default: 6, unit: '' },
-        DAMP_BUMP_RR:    { label: 'RR', min: 1, max: 14, step: 1, default: 6, unit: '' },
+        DAMP_BUMP_LF:    { label: 'FL', min: 0, max: 11, step: 1, default: 6, unit: '' },
+        DAMP_BUMP_RF:    { label: 'FR', min: 0, max: 11, step: 1, default: 6, unit: '' },
+        DAMP_BUMP_LR:    { label: 'RL', min: 0, max: 11, step: 1, default: 6, unit: '' },
+        DAMP_BUMP_RR:    { label: 'RR', min: 0, max: 11, step: 1, default: 6, unit: '' },
 
-        DAMP_REBOUND_LF: { label: 'FL', min: 1, max: 14, step: 1, default: 5, unit: '' },
-        DAMP_REBOUND_RF: { label: 'FR', min: 1, max: 14, step: 1, default: 5, unit: '' },
-        DAMP_REBOUND_LR: { label: 'RL', min: 1, max: 14, step: 1, default: 7, unit: '' },
-        DAMP_REBOUND_RR: { label: 'RR', min: 1, max: 14, step: 1, default: 7, unit: '' },
+        DAMP_REBOUND_LF: { label: 'FL', min: 0, max: 11, step: 1, default: 5, unit: '' },
+        DAMP_REBOUND_RF: { label: 'FR', min: 0, max: 11, step: 1, default: 5, unit: '' },
+        DAMP_REBOUND_LR: { label: 'RL', min: 0, max: 11, step: 1, default: 7, unit: '' },
+        DAMP_REBOUND_RR: { label: 'RR', min: 0, max: 11, step: 1, default: 7, unit: '' },
     },
 
     // ── INI export order (alphabetical as AC expects) ───────────────────────
@@ -70,7 +70,6 @@ window.AC_CARS['mx5_cup'] = {
         'TRACTION_CONTROL', 'TYRES',
     ],
 
-    // ── Built-in presets — Section 6 (derived from 28 real E. Cavalli setups) ─
     presets: {
 
         // ── Sec. 6 — "Neutral Baseline" ────────────────────────────────────────
@@ -181,7 +180,6 @@ window.AC_CARS['mx5_cup'] = {
             },
         },
 
-        // ── Real circuit reference setups (E. Cavalli) ────────────────────────
         'Nürburgring GP 25°C+': {
             desc: 'Real setup · hot ambient · RF camber asymmetry for left-dominant layout',
             values: {

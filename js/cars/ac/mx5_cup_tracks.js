@@ -1,5 +1,4 @@
 // ── MX-5 Cup · Circuit-specific setups organised by track ──────────────────
-// Source: E. Cavalli real setup files (22 circuits)
 // Key column order mirrors AC INI alphabetical order.
 // Use AC_App.loadTrackPreset(values) to apply any entry.
 (function () {
