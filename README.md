@@ -1,8 +1,10 @@
-![LeManStudio Preview](img/logo.png)
+<p align="center">
+    <img src="img/icon.png" alt="LabMotorsportSandbox Icon">
+</p>
 
-### LeManStudio is a web-based engineering suite designed to aid drivers in configuring their car setups. It provides an intuitive, data-driven interface to visualize the effects of vehicle setup changes, helping drivers optimize their performance on the track.
+### LabMotorsportSandbox is a web-based engineering suite designed to aid drivers in configuring their car setups for various racing simulations. It provides an intuitive, data-driven interface to visualize the effects of vehicle setup changes, helping drivers optimize their performance on the track.
 
-![LeManStudio Preview](img/preview.png)
+![LabMotorsportSandbox Preview](img/preview.png)
 
 ## Features
 
