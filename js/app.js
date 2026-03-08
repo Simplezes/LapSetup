@@ -207,6 +207,21 @@ function initAppInteractions() {
         if (window.updateSliderFill) window.updateSliderFill(input);
     });
 
+    // Game Selector Logic
+    const gameBtn = document.getElementById('gameSelectorBtn');
+    const gameDropdown = document.getElementById('gameDropdown');
+    if (gameBtn && gameDropdown) {
+        gameBtn.onclick = (e) => {
+            e.stopPropagation();
+            gameDropdown.classList.toggle('show');
+        };
+        document.addEventListener('click', (e) => {
+            if (!gameBtn.contains(e.target)) {
+                gameDropdown.classList.remove('show');
+            }
+        });
+    }
+
     if (els.sync) {
         els.sync.onclick = () => {
 

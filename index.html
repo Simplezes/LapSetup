@@ -62,6 +62,32 @@
             </div>
 
             <div class="flex gap-4 items-center">
+                <div class="relative group">
+                    <button id="gameSelectorBtn"
+                        class="flex items-center gap-2 px-3 py-1.5 bg-panel-alt rounded border border-white/5 hover:border-blue-500/50 transition-all text-[10px] font-bold tracking-widest">
+                        <span id="currentGameName">LE MANS ULTIMATE</span>
+                        <svg class="w-2.5 h-2.5 opacity-40 group-hover:opacity-100 transition-opacity"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <!-- Game Dropdown -->
+                    <div id="gameDropdown"
+                        class="hidden absolute top-full left-0 mt-2 w-48 bg-[#09090b] border border-white/5 rounded shadow-2xl z-[2000] p-1 glass">
+                        <button
+                            class="w-full text-left px-3 py-2 text-[9px] font-bold tracking-widest text-blue-400 hover:bg-white/5 rounded transition-colors flex items-center justify-between">
+                            LE MANS ULTIMATE
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]">
+                            </div>
+                        </button>
+                        <button
+                            class="w-full text-left px-3 py-2 text-[9px] font-bold tracking-widest text-slate-600 cursor-not-allowed flex flex-col gap-0.5"
+                            disabled>
+                            <span>ASSETTO CORSA</span>
+                            <span class="text-[6px] text-amber-500/40 uppercase">COMING SOON</span>
+                        </button>
+                    </div>
+                </div>
 
                 <div class="mode-toggle flex bg-panel-alt rounded p-0.5 border border-white border-opacity-5">
                     <button id="modeBasic"

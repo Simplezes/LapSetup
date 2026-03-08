@@ -773,6 +773,16 @@ header::after {
     box-shadow: 0 0 10px rgba(0, 132, 255, 0.1);
 }
 
+/* ─── Game Selector Dropdown ─────────────────────────────────────────────────── */
+#gameDropdown.show {
+    display: block !important;
+    animation: zoom-in 0.2s ease-out forwards;
+}
+
+#gameSelectorBtn:active {
+    transform: scale(0.98);
+}
+
 /* ─── Conditional Visibility ─────────────────────────────────────────────────── */
 body.mode-basic .setting-advanced {
     display: none !important;
