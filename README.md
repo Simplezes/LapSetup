@@ -1,10 +1,10 @@
 <p align="center">
-    <img src="img/icon_name.png" alt="LabMotorsportSandbox Icon">
+    <img src="img/icon_name.png" alt="LabSetup Icon">
 </p>
 
 ### **LabSetup** is a web-based engineering suite designed to aid drivers in configuring their car setups for various racing simulations. It provides an intuitive, data-driven interface to visualize the effects of vehicle setup changes, helping drivers optimize their performance on the track.
 
-![LabMotorsportSandbox Preview](img/preview.png)
+![LabSetup Preview](img/preview.png)
 
 ## Features
 
