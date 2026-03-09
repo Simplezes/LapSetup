@@ -171,7 +171,12 @@ function update() {
 
     const naturalBalance = phys.naturalBalance ?? 0.0;
     const mechanicalBias = weightDistF;
-    const aeroSensitivity = phys.sensitivity ?? 1.0;
+    let aeroSensitivity = 1.0;
+    if (CAR.id.includes('lmp2')) {
+        aeroSensitivity = 1.5;
+    } else if (CAR.id.includes('lmp3')) {
+        aeroSensitivity = 1.25;
+    }
     const tyreWindow = phys.tyreWindow || [80, 90];
 
     const physValLocal = (id, val) => getPhysVal(id, val, CAR);
